@@ -1,34 +1,35 @@
 package com.mpatric.mp3agic;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class ID3v1GenresTest {
+
+class ID3v1GenresTest {
 
 	@Test
-	public void returnsMinusOneForNonExistentGenre() throws Exception {
-		assertEquals(-1, ID3v1Genres.matchGenreDescription("non existent"));
+	void returnsMinusOneForNonExistentGenre() throws Exception {
+		assertThat(ID3v1Genres.matchGenreDescription("non existent")).isEqualTo(-1);
 	}
 
 	@Test
-	public void returnsCorrectGenreIdForFirstExistentGenre() throws Exception {
-		assertEquals(0, ID3v1Genres.matchGenreDescription("Blues"));
+	void returnsCorrectGenreIdForFirstExistentGenre() throws Exception {
+		assertThat(ID3v1Genres.matchGenreDescription("Blues")).isEqualTo(0);
 	}
 
 	@Test
-	public void returnsCorrectGenreIdForPolka() throws Exception {
-		assertEquals(75, ID3v1Genres.matchGenreDescription("Polka"));
+	void returnsCorrectGenreIdForPolka() throws Exception {
+		assertThat(ID3v1Genres.matchGenreDescription("Polka")).isEqualTo(75);
 	}
 
 	@Test
-	public void returnsCorrectGenreIdForLastExistentGenre() throws Exception {
-		assertEquals(147, ID3v1Genres.matchGenreDescription("Synthpop"));
+	void returnsCorrectGenreIdForLastExistentGenre() throws Exception {
+		assertThat(ID3v1Genres.matchGenreDescription("Synthpop")).isEqualTo(147);
 	}
 
 	@Test
-	public void ignoresCase() throws Exception {
-		assertEquals(137, ID3v1Genres.matchGenreDescription("heavy METAL"));
+	void ignoresCase() throws Exception {
+		assertThat(ID3v1Genres.matchGenreDescription("heavy METAL")).isEqualTo(137);
 	}
 
 }

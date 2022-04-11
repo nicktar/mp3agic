@@ -6,11 +6,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class ID3v2TagTest {
+
+class ID3v2TagTest {
 
 	private static final byte BYTE_I = 0x49;
 	private static final byte BYTE_D = 0x44;
@@ -18,47 +20,42 @@ public class ID3v2TagTest {
 	private static final byte[] ID3V2_HEADER = {BYTE_I, BYTE_D, BYTE_3, 4, 0, 0, 0, 0, 2, 1};
 
 	@Test
-	public void shouldInitialiseFromHeaderBlockWithValidHeaders() throws NoSuchTagException, UnsupportedTagException, InvalidDataException {
+	void shouldInitialiseFromHeaderBlockWithValidHeaders() throws NoSuchTagException, UnsupportedTagException, InvalidDataException {
 		byte[] header = BufferTools.copyBuffer(ID3V2_HEADER, 0, ID3V2_HEADER.length);
 		header[3] = 2;
 		header[4] = 0;
 		ID3v2 id3v2tag;
 		id3v2tag = createTag(header);
-		assertEquals("2.0", id3v2tag.getVersion());
+		assertThat(id3v2tag.getVersion()).isEqualTo("2.0");
 		header[3] = 3;
 		id3v2tag = createTag(header);
-		assertEquals("3.0", id3v2tag.getVersion());
+		assertThat(id3v2tag.getVersion()).isEqualTo("3.0");
 		header[3] = 4;
 		id3v2tag = createTag(header);
-		assertEquals("4.0", id3v2tag.getVersion());
+		assertThat(id3v2tag.getVersion()).isEqualTo("4.0");
 	}
 
 	@Test
-	public void shouldCalculateCorrectDataLengthsFromHeaderBlock() throws NoSuchTagException, UnsupportedTagException, InvalidDataException {
+	void shouldCalculateCorrectDataLengthsFromHeaderBlock() throws NoSuchTagException, UnsupportedTagException, InvalidDataException {
 		byte[] header = BufferTools.copyBuffer(ID3V2_HEADER, 0, ID3V2_HEADER.length);
 		ID3v2 id3v2tag = createTag(header);
-		assertEquals(257, id3v2tag.getDataLength());
+		assertThat(id3v2tag.getDataLength()).isEqualTo(257);
 		header[8] = 0x09;
 		header[9] = 0x41;
 		id3v2tag = createTag(header);
-		assertEquals(1217, id3v2tag.getDataLength());
+		assertThat(id3v2tag.getDataLength()).isEqualTo(1217);
 	}
 
 	@Test
-	public void shouldThrowExceptionForNonSupportedVersionInId3v2HeaderBlock() throws NoSuchTagException, InvalidDataException {
+	void shouldThrowExceptionForNonSupportedVersionInId3v2HeaderBlock() throws NoSuchTagException, InvalidDataException {
 		byte[] header = BufferTools.copyBuffer(ID3V2_HEADER, 0, ID3V2_HEADER.length);
 		header[3] = 5;
 		header[4] = 0;
-		try {
-			ID3v2TagFactory.createTag(header);
-			fail("UnsupportedTagException expected but not thrown");
-		} catch (UnsupportedTagException e) {
-			// expected
-		}
+			assertThrows(UnsupportedTagException.class, () -> ID3v2TagFactory.createTag(header));
 	}
 
 	@Test
-	public void shouldSortId3TagsAlphabetically() throws Exception {
+	void shouldSortId3TagsAlphabetically() throws Exception {
 		byte[] buffer = TestHelper.loadFile("src/test/resources/v1andv23tags.mp3");
 		ID3v2 id3v2tag = ID3v2TagFactory.createTag(buffer);
 		Map<String, ID3v2FrameSet> frameSets = id3v2tag.getFrameSets();
@@ -66,158 +63,153 @@ public class ID3v2TagTest {
 		String lastKey = "";
 		while (frameSetIterator.hasNext()) {
 			ID3v2FrameSet frameSet = frameSetIterator.next();
-			assertTrue(frameSet.getId().compareTo(lastKey) > 0);
+			assertThat(frameSet.getId().compareTo(lastKey)).isGreaterThan(0);
 			lastKey = frameSet.getId();
 		}
 	}
 
 	@Test
-	public void shouldReadFramesFromMp3With32Tag() throws IOException, NoSuchTagException, UnsupportedTagException, InvalidDataException {
+	void shouldReadFramesFromMp3With32Tag() throws IOException, NoSuchTagException, UnsupportedTagException, InvalidDataException {
 		byte[] buffer = TestHelper.loadFile("src/test/resources/v1andv23tags.mp3");
 		ID3v2 id3v2tag = ID3v2TagFactory.createTag(buffer);
-		assertEquals("3.0", id3v2tag.getVersion());
-		assertEquals(0x44B, id3v2tag.getLength());
-		assertEquals(12, id3v2tag.getFrameSets().size());
-		assertEquals(1, (id3v2tag.getFrameSets().get("TENC")).getFrames().size());
-		assertEquals(1, (id3v2tag.getFrameSets().get("WXXX")).getFrames().size());
-		assertEquals(1, (id3v2tag.getFrameSets().get("TCOP")).getFrames().size());
-		assertEquals(1, (id3v2tag.getFrameSets().get("TOPE")).getFrames().size());
-		assertEquals(1, (id3v2tag.getFrameSets().get("TCOM")).getFrames().size());
-		assertEquals(2, (id3v2tag.getFrameSets().get("COMM")).getFrames().size());
-		assertEquals(1, (id3v2tag.getFrameSets().get("TPE1")).getFrames().size());
-		assertEquals(1, (id3v2tag.getFrameSets().get("TALB")).getFrames().size());
-		assertEquals(1, (id3v2tag.getFrameSets().get("TRCK")).getFrames().size());
-		assertEquals(1, (id3v2tag.getFrameSets().get("TYER")).getFrames().size());
-		assertEquals(1, (id3v2tag.getFrameSets().get("TCON")).getFrames().size());
-		assertEquals(1, (id3v2tag.getFrameSets().get("TIT2")).getFrames().size());
+		assertThat(id3v2tag.getVersion()).isEqualTo("3.0");
+		assertThat(id3v2tag.getLength()).isEqualTo(0x44B);
+		assertThat(id3v2tag.getFrameSets().size()).isEqualTo(12);
+		assertThat((id3v2tag.getFrameSets().get("TENC")).getFrames().size()).isEqualTo(1);
+		assertThat((id3v2tag.getFrameSets().get("WXXX")).getFrames().size()).isEqualTo(1);
+		assertThat((id3v2tag.getFrameSets().get("TCOP")).getFrames().size()).isEqualTo(1);
+		assertThat((id3v2tag.getFrameSets().get("TOPE")).getFrames().size()).isEqualTo(1);
+		assertThat((id3v2tag.getFrameSets().get("TCOM")).getFrames().size()).isEqualTo(1);
+		assertThat((id3v2tag.getFrameSets().get("COMM")).getFrames().size()).isEqualTo(2);
+		assertThat((id3v2tag.getFrameSets().get("TPE1")).getFrames().size()).isEqualTo(1);
+		assertThat((id3v2tag.getFrameSets().get("TALB")).getFrames().size()).isEqualTo(1);
+		assertThat((id3v2tag.getFrameSets().get("TRCK")).getFrames().size()).isEqualTo(1);
+		assertThat((id3v2tag.getFrameSets().get("TYER")).getFrames().size()).isEqualTo(1);
+		assertThat((id3v2tag.getFrameSets().get("TCON")).getFrames().size()).isEqualTo(1);
+		assertThat((id3v2tag.getFrameSets().get("TIT2")).getFrames().size()).isEqualTo(1);
 	}
 
 	@Test
-	public void shouldReadId3v2WithFooter() throws IOException, NoSuchTagException, UnsupportedTagException, InvalidDataException {
+	void shouldReadId3v2WithFooter() throws IOException, NoSuchTagException, UnsupportedTagException, InvalidDataException {
 		byte[] buffer = TestHelper.loadFile("src/test/resources/v1andv24tags.mp3");
 		ID3v2 id3v2tag = ID3v2TagFactory.createTag(buffer);
-		assertEquals("4.0", id3v2tag.getVersion());
-		assertEquals(0x44B, id3v2tag.getLength());
+		assertThat(id3v2tag.getVersion()).isEqualTo("4.0");
+		assertThat(id3v2tag.getLength()).isEqualTo(0x44B);
 	}
 
 	@Test
-	public void shouldReadTagFieldsFromMp3With24tag() throws Exception {
+	void shouldReadTagFieldsFromMp3With24tag() throws Exception {
 		byte[] buffer = TestHelper.loadFile("src/test/resources/v24tagswithalbumimage.mp3");
 		ID3v2 id3v24tag = ID3v2TagFactory.createTag(buffer);
-		assertEquals("4.0", id3v24tag.getVersion());
-		assertEquals("1", id3v24tag.getTrack());
-		assertEquals("ARTIST123456789012345678901234", id3v24tag.getArtist());
-		assertEquals("TITLE1234567890123456789012345", id3v24tag.getTitle());
-		assertEquals("ALBUM1234567890123456789012345", id3v24tag.getAlbum());
-		assertEquals(0x0d, id3v24tag.getGenre());
-		assertEquals("Pop", id3v24tag.getGenreDescription());
-		assertEquals("COMMENT123456789012345678901", id3v24tag.getComment());
-		assertEquals("LYRICS1234567890123456789012345", id3v24tag.getLyrics());
-		assertEquals("COMPOSER23456789012345678901234", id3v24tag.getComposer());
-		assertEquals("ORIGARTIST234567890123456789012", id3v24tag.getOriginalArtist());
-		assertEquals("COPYRIGHT2345678901234567890123", id3v24tag.getCopyright());
-		assertEquals("URL2345678901234567890123456789", id3v24tag.getUrl());
-		assertEquals("COMMERCIALURL234567890123456789", id3v24tag.getCommercialUrl());
-		assertEquals("COPYRIGHTURL2345678901234567890", id3v24tag.getCopyrightUrl());
-		assertEquals("OFFICIALARTISTURL23456789012345", id3v24tag.getArtistUrl());
-		assertEquals("OFFICIALAUDIOFILE23456789012345", id3v24tag.getAudiofileUrl());
-		assertEquals("OFFICIALAUDIOSOURCE234567890123", id3v24tag.getAudioSourceUrl());
-		assertEquals("INTERNETRADIOSTATIONURL23456783", id3v24tag.getRadiostationUrl());
-		assertEquals("PAYMENTURL234567890123456789012", id3v24tag.getPaymentUrl());
-		assertEquals("PUBLISHERURL2345678901234567890", id3v24tag.getPublisherUrl());
-		assertEquals("ENCODER234567890123456789012345", id3v24tag.getEncoder());
-		assertEquals(1885, id3v24tag.getAlbumImage().length);
-		assertEquals("image/png", id3v24tag.getAlbumImageMimeType());
+		assertThat(id3v24tag.getVersion()).isEqualTo("4.0");
+		assertThat(id3v24tag.getTrack()).isEqualTo("1");
+		assertThat(id3v24tag.getArtist()).isEqualTo("ARTIST123456789012345678901234");
+		assertThat(id3v24tag.getTitle()).isEqualTo("TITLE1234567890123456789012345");
+		assertThat(id3v24tag.getAlbum()).isEqualTo("ALBUM1234567890123456789012345");
+		assertThat(id3v24tag.getGenre()).isEqualTo(0x0d);
+		assertThat(id3v24tag.getGenreDescription()).isEqualTo("Pop");
+		assertThat(id3v24tag.getComment()).isEqualTo("COMMENT123456789012345678901");
+		assertThat(id3v24tag.getLyrics()).isEqualTo("LYRICS1234567890123456789012345");
+		assertThat(id3v24tag.getComposer()).isEqualTo("COMPOSER23456789012345678901234");
+		assertThat(id3v24tag.getOriginalArtist()).isEqualTo("ORIGARTIST234567890123456789012");
+		assertThat(id3v24tag.getCopyright()).isEqualTo("COPYRIGHT2345678901234567890123");
+		assertThat(id3v24tag.getUrl()).isEqualTo("URL2345678901234567890123456789");
+		assertThat(id3v24tag.getCommercialUrl()).isEqualTo("COMMERCIALURL234567890123456789");
+		assertThat(id3v24tag.getCopyrightUrl()).isEqualTo("COPYRIGHTURL2345678901234567890");
+		assertThat(id3v24tag.getArtistUrl()).isEqualTo("OFFICIALARTISTURL23456789012345");
+		assertThat(id3v24tag.getAudiofileUrl()).isEqualTo("OFFICIALAUDIOFILE23456789012345");
+		assertThat(id3v24tag.getAudioSourceUrl()).isEqualTo("OFFICIALAUDIOSOURCE234567890123");
+		assertThat(id3v24tag.getRadiostationUrl()).isEqualTo("INTERNETRADIOSTATIONURL23456783");
+		assertThat(id3v24tag.getPaymentUrl()).isEqualTo("PAYMENTURL234567890123456789012");
+		assertThat(id3v24tag.getPublisherUrl()).isEqualTo("PUBLISHERURL2345678901234567890");
+		assertThat(id3v24tag.getEncoder()).isEqualTo("ENCODER234567890123456789012345");
+		assertThat(id3v24tag.getAlbumImage().length).isEqualTo(1885);
+		assertThat(id3v24tag.getAlbumImageMimeType()).isEqualTo("image/png");
 	}
 
 	@Test
-	public void shouldReadTagFieldsFromMp3With32tag() throws Exception {
+	void shouldReadTagFieldsFromMp3With32tag() throws Exception {
 		byte[] buffer = TestHelper.loadFile("src/test/resources/v1andv23tagswithalbumimage.mp3");
 		ID3v2 id3tag = ID3v2TagFactory.createTag(buffer);
-		assertEquals("1", id3tag.getTrack());
-		assertEquals("ARTIST123456789012345678901234", id3tag.getArtist());
-		assertEquals("TITLE1234567890123456789012345", id3tag.getTitle());
-		assertEquals("ALBUM1234567890123456789012345", id3tag.getAlbum());
-		assertEquals("2001", id3tag.getYear());
-		assertEquals(0x0d, id3tag.getGenre());
-		assertEquals("Pop", id3tag.getGenreDescription());
-		assertEquals("COMMENT123456789012345678901", id3tag.getComment());
-		assertEquals("LYRICS1234567890123456789012345", id3tag.getLyrics());
-		assertEquals("COMPOSER23456789012345678901234", id3tag.getComposer());
-		assertEquals("ORIGARTIST234567890123456789012", id3tag.getOriginalArtist());
-		assertEquals("COPYRIGHT2345678901234567890123", id3tag.getCopyright());
-		assertEquals("URL2345678901234567890123456789", id3tag.getUrl());
-		assertEquals("ENCODER234567890123456789012345", id3tag.getEncoder());
-		assertEquals(1885, id3tag.getAlbumImage().length);
-		assertEquals("image/png", id3tag.getAlbumImageMimeType());
+		assertThat(id3tag.getTrack()).isEqualTo("1");
+		assertThat(id3tag.getArtist()).isEqualTo("ARTIST123456789012345678901234");
+		assertThat(id3tag.getTitle()).isEqualTo("TITLE1234567890123456789012345");
+		assertThat(id3tag.getAlbum()).isEqualTo("ALBUM1234567890123456789012345");
+		assertThat(id3tag.getYear()).isEqualTo("2001");
+		assertThat(id3tag.getGenre()).isEqualTo(0x0d);
+		assertThat(id3tag.getGenreDescription()).isEqualTo("Pop");
+		assertThat(id3tag.getComment()).isEqualTo("COMMENT123456789012345678901");
+		assertThat(id3tag.getLyrics()).isEqualTo("LYRICS1234567890123456789012345");
+		assertThat(id3tag.getComposer()).isEqualTo("COMPOSER23456789012345678901234");
+		assertThat(id3tag.getOriginalArtist()).isEqualTo("ORIGARTIST234567890123456789012");
+		assertThat(id3tag.getCopyright()).isEqualTo("COPYRIGHT2345678901234567890123");
+		assertThat(id3tag.getUrl()).isEqualTo("URL2345678901234567890123456789");
+		assertThat(id3tag.getEncoder()).isEqualTo("ENCODER234567890123456789012345");
+		assertThat(id3tag.getAlbumImage().length).isEqualTo(1885);
+		assertThat(id3tag.getAlbumImageMimeType()).isEqualTo("image/png");
 	}
 
 	@Test
-	public void shouldConvert23TagToBytesAndBackToEquivalentTag() throws Exception {
+	void shouldConvert23TagToBytesAndBackToEquivalentTag() throws Exception {
 		ID3v2 id3tag = new ID3v23Tag();
 		setTagFields(id3tag);
 		byte[] data = id3tag.toBytes();
 		ID3v2 id3tagCopy = new ID3v23Tag(data);
-		assertEquals(2340, data.length);
-		assertEquals(id3tag, id3tagCopy);
+		assertThat(data.length).isEqualTo(2340);
+		assertThat(id3tagCopy).isEqualTo(id3tag);
 	}
 
 	@Test
-	public void shouldConvert24TagWithFooterToBytesAndBackToEquivalentTag() throws Exception {
+	void shouldConvert24TagWithFooterToBytesAndBackToEquivalentTag() throws Exception {
 		ID3v2 id3tag = new ID3v24Tag();
 		setTagFields(id3tag);
 		id3tag.setFooter(true);
 		byte[] data = id3tag.toBytes();
 		ID3v2 id3tagCopy = new ID3v24Tag(data);
-		assertEquals(2350, data.length);
-		assertEquals(id3tag, id3tagCopy);
+		assertThat(data.length).isEqualTo(2350);
+		assertThat(id3tagCopy).isEqualTo(id3tag);
 	}
 
 	@Test
-	public void shouldConvert24TagWithPaddingToBytesAndBackToEquivalentTag() throws Exception {
+	void shouldConvert24TagWithPaddingToBytesAndBackToEquivalentTag() throws Exception {
 		ID3v2 id3tag = new ID3v24Tag();
 		setTagFields(id3tag);
 		id3tag.setPadding(true);
 		byte[] data = id3tag.toBytes();
 		ID3v2 id3tagCopy = new ID3v24Tag(data);
-		assertEquals(2340 + AbstractID3v2Tag.PADDING_LENGTH, data.length);
-		assertEquals(id3tag, id3tagCopy);
+		assertThat(data.length).isEqualTo(2340 + AbstractID3v2Tag.PADDING_LENGTH);
+		assertThat(id3tagCopy).isEqualTo(id3tag);
 	}
 
 	@Test
-	public void shouldNotUsePaddingOnA24TagIfItHasAFooter() throws Exception {
+	void shouldNotUsePaddingOnA24TagIfItHasAFooter() throws Exception {
 		ID3v2 id3tag = new ID3v24Tag();
 		setTagFields(id3tag);
 		id3tag.setFooter(true);
 		id3tag.setPadding(true);
 		byte[] data = id3tag.toBytes();
-		assertEquals(2350, data.length);
+		assertThat(data.length).isEqualTo(2350);
 	}
 
 	@Test
-	public void shouldExtractGenreNumberFromCombinedGenreStringsCorrectly() throws Exception {
+	void shouldExtractGenreNumberFromCombinedGenreStringsCorrectly() {
 		ID3v23TagForTesting id3tag = new ID3v23TagForTesting();
-		try {
-			id3tag.extractGenreNumber("");
-			fail("NumberFormatException expected but not thrown");
-		} catch (NumberFormatException e) {
-			// expected
-		}
-		assertEquals(13, id3tag.extractGenreNumber("13"));
-		assertEquals(13, id3tag.extractGenreNumber("(13)"));
-		assertEquals(13, id3tag.extractGenreNumber("(13)Pop"));
+			assertThrows(NumberFormatException.class, () -> id3tag.extractGenreNumber(""));
+		assertThat(id3tag.extractGenreNumber("13")).isEqualTo(13);
+		assertThat(id3tag.extractGenreNumber("(13)")).isEqualTo(13);
+		assertThat(id3tag.extractGenreNumber("(13)Pop")).isEqualTo(13);
 	}
 
 	@Test
-	public void shouldExtractGenreDescriptionFromCombinedGenreStringsCorrectly() throws Exception {
+	void shouldExtractGenreDescriptionFromCombinedGenreStringsCorrectly() {
 		ID3v23TagForTesting id3tag = new ID3v23TagForTesting();
-		assertNull(id3tag.extractGenreDescription(""));
-		assertEquals("", id3tag.extractGenreDescription("(13)"));
-		assertEquals("Pop", id3tag.extractGenreDescription("(13)Pop"));
+		assertThat(id3tag.extractGenreDescription("")).isNull();
+		assertThat(id3tag.extractGenreDescription("(13)")).isEqualTo("");
+		assertThat(id3tag.extractGenreDescription("(13)Pop")).isEqualTo("Pop");
 	}
 
 	@Test
-	public void shouldSetCombinedGenreOnTag() throws Exception {
+	void shouldSetCombinedGenreOnTag() throws Exception {
 		ID3v2 id3tag = new ID3v23Tag();
 		setTagFields(id3tag);
 		Map<String, ID3v2FrameSet> frameSets = id3tag.getFrameSets();
@@ -226,16 +218,16 @@ public class ID3v2TagTest {
 		ID3v2Frame frame = frames.get(0);
 		byte[] bytes = frame.getData();
 		String genre = BufferTools.byteBufferToString(bytes, 1, bytes.length - 1);
-		assertEquals("(13)Pop", genre);
+		assertThat(genre).isEqualTo("(13)Pop");
 	}
 
 	@Test
-	public void testSetGenreDescriptionOn23Tag() throws Exception {
+	void testSetGenreDescriptionOn23Tag() throws Exception {
 		ID3v2 id3tag = new ID3v23Tag();
 		setTagFields(id3tag);
 		id3tag.setGenreDescription("Jazz");
-		assertEquals("Jazz", id3tag.getGenreDescription());
-		assertEquals(8, id3tag.getGenre());
+		assertThat(id3tag.getGenreDescription()).isEqualTo("Jazz");
+		assertThat(id3tag.getGenre()).isEqualTo(8);
 
 		Map<String, ID3v2FrameSet> frameSets = id3tag.getFrameSets();
 		ID3v2FrameSet frameSet = frameSets.get("TCON");
@@ -243,28 +235,23 @@ public class ID3v2TagTest {
 		ID3v2Frame frame = frames.get(0);
 		byte[] bytes = frame.getData();
 		String genre = BufferTools.byteBufferToString(bytes, 1, bytes.length - 1);
-		assertEquals("(8)Jazz", genre);
+		assertThat(genre).isEqualTo("(8)Jazz");
 	}
 
 	@Test
-	public void testSetGenreDescriptionOn23TagWithUnknownGenre() throws Exception {
+	void testSetGenreDescriptionOn23TagWithUnknownGenre() throws Exception {
 		ID3v2 id3tag = new ID3v23Tag();
 		setTagFields(id3tag);
-		try {
-			id3tag.setGenreDescription("Bebop");
-			fail("expected IllegalArgumentException");
-		} catch (IllegalArgumentException e) {
-			// fine
-		}
+			assertThrows(IllegalArgumentException.class, () -> id3tag.setGenreDescription("Bebop"));
 	}
 
 	@Test
-	public void testSetGenreDescriptionOn24Tag() throws Exception {
+	void testSetGenreDescriptionOn24Tag() throws Exception {
 		ID3v2 id3tag = new ID3v24Tag();
 		setTagFields(id3tag);
 		id3tag.setGenreDescription("Jazz");
-		assertEquals("Jazz", id3tag.getGenreDescription());
-		assertEquals(8, id3tag.getGenre());
+		assertThat(id3tag.getGenreDescription()).isEqualTo("Jazz");
+		assertThat(id3tag.getGenre()).isEqualTo(8);
 
 		Map<String, ID3v2FrameSet> frameSets = id3tag.getFrameSets();
 		ID3v2FrameSet frameSet = frameSets.get("TCON");
@@ -272,16 +259,16 @@ public class ID3v2TagTest {
 		ID3v2Frame frame = frames.get(0);
 		byte[] bytes = frame.getData();
 		String genre = BufferTools.byteBufferToString(bytes, 1, bytes.length - 1);
-		assertEquals("Jazz", genre);
+		assertThat(genre).isEqualTo("Jazz");
 	}
 
 	@Test
-	public void testSetGenreDescriptionOn24TagWithUnknownGenre() throws Exception {
+	void testSetGenreDescriptionOn24TagWithUnknownGenre() throws Exception {
 		ID3v2 id3tag = new ID3v24Tag();
 		setTagFields(id3tag);
 		id3tag.setGenreDescription("Bebop");
-		assertEquals("Bebop", id3tag.getGenreDescription());
-		assertEquals(-1, id3tag.getGenre());
+		assertThat(id3tag.getGenreDescription()).isEqualTo("Bebop");
+		assertThat(id3tag.getGenre()).isEqualTo(-1);
 
 		Map<String, ID3v2FrameSet> frameSets = id3tag.getFrameSets();
 		ID3v2FrameSet frameSet = frameSets.get("TCON");
@@ -289,74 +276,74 @@ public class ID3v2TagTest {
 		ID3v2Frame frame = frames.get(0);
 		byte[] bytes = frame.getData();
 		String genre = BufferTools.byteBufferToString(bytes, 1, bytes.length - 1);
-		assertEquals("Bebop", genre);
+		assertThat(genre).isEqualTo("Bebop");
 	}
 
 	@Test
-	public void shouldReadCombinedGenreInTag() throws Exception {
+	void shouldReadCombinedGenreInTag() throws Exception {
 		ID3v2 id3tag = new ID3v23Tag();
 		setTagFields(id3tag);
 		byte[] bytes = id3tag.toBytes();
 		ID3v2 id3tagFromData = new ID3v23Tag(bytes);
-		assertEquals(13, id3tagFromData.getGenre());
-		assertEquals("Pop", id3tagFromData.getGenreDescription());
+		assertThat(id3tagFromData.getGenre()).isEqualTo(13);
+		assertThat(id3tagFromData.getGenreDescription()).isEqualTo("Pop");
 	}
 
 	@Test
-	public void shouldGetCommentAndItunesComment() throws Exception {
+	void shouldGetCommentAndItunesComment() throws Exception {
 		byte[] buffer = TestHelper.loadFile("src/test/resources/withitunescomment.mp3");
 		ID3v2 id3tag = ID3v2TagFactory.createTag(buffer);
-		assertEquals("COMMENT123456789012345678901", id3tag.getComment());
-		assertEquals(" 00000A78 00000A74 00000C7C 00000C6C 00000000 00000000 000051F7 00005634 00000000 00000000", id3tag.getItunesComment());
+		assertThat(id3tag.getComment()).isEqualTo("COMMENT123456789012345678901");
+		assertThat(id3tag.getItunesComment()).isEqualTo(" 00000A78 00000A74 00000C7C 00000C6C 00000000 00000000 000051F7 00005634 00000000 00000000");
 	}
 
 	@Test
-	public void shouldReadFramesFromMp3WithObselete32Tag() throws Exception {
+	void shouldReadFramesFromMp3WithObselete32Tag() throws Exception {
 		byte[] buffer = TestHelper.loadFile("src/test/resources/obsolete.mp3");
 		ID3v2 id3v2tag = ID3v2TagFactory.createTag(buffer);
-		assertEquals("2.0", id3v2tag.getVersion());
-		assertEquals(0x3c5a2, id3v2tag.getLength());
-		assertEquals(10, id3v2tag.getFrameSets().size());
-		assertEquals(1, (id3v2tag.getFrameSets().get("TCM")).getFrames().size());
-		assertEquals(2, (id3v2tag.getFrameSets().get("COM")).getFrames().size());
-		assertEquals(1, (id3v2tag.getFrameSets().get("TP1")).getFrames().size());
-		assertEquals(1, (id3v2tag.getFrameSets().get("TAL")).getFrames().size());
-		assertEquals(1, (id3v2tag.getFrameSets().get("TRK")).getFrames().size());
-		assertEquals(1, (id3v2tag.getFrameSets().get("TPA")).getFrames().size());
-		assertEquals(1, (id3v2tag.getFrameSets().get("TYE")).getFrames().size());
-		assertEquals(1, (id3v2tag.getFrameSets().get("PIC")).getFrames().size());
-		assertEquals(1, (id3v2tag.getFrameSets().get("TCO")).getFrames().size());
-		assertEquals(1, (id3v2tag.getFrameSets().get("TT2")).getFrames().size());
+		assertThat(id3v2tag.getVersion()).isEqualTo("2.0");
+		assertThat(id3v2tag.getLength()).isEqualTo(0x3c5a2);
+		assertThat(id3v2tag.getFrameSets().size()).isEqualTo(10);
+		assertThat((id3v2tag.getFrameSets().get("TCM")).getFrames().size()).isEqualTo(1);
+		assertThat((id3v2tag.getFrameSets().get("COM")).getFrames().size()).isEqualTo(2);
+		assertThat((id3v2tag.getFrameSets().get("TP1")).getFrames().size()).isEqualTo(1);
+		assertThat((id3v2tag.getFrameSets().get("TAL")).getFrames().size()).isEqualTo(1);
+		assertThat((id3v2tag.getFrameSets().get("TRK")).getFrames().size()).isEqualTo(1);
+		assertThat((id3v2tag.getFrameSets().get("TPA")).getFrames().size()).isEqualTo(1);
+		assertThat((id3v2tag.getFrameSets().get("TYE")).getFrames().size()).isEqualTo(1);
+		assertThat((id3v2tag.getFrameSets().get("PIC")).getFrames().size()).isEqualTo(1);
+		assertThat((id3v2tag.getFrameSets().get("TCO")).getFrames().size()).isEqualTo(1);
+		assertThat((id3v2tag.getFrameSets().get("TT2")).getFrames().size()).isEqualTo(1);
 	}
 
 	@Test
-	public void shouldReadTagFieldsFromMp3WithObselete32tag() throws Exception {
+	void shouldReadTagFieldsFromMp3WithObselete32tag() throws Exception {
 		byte[] buffer = TestHelper.loadFile("src/test/resources/obsolete.mp3");
 		ID3v2 id3tag = ID3v2TagFactory.createTag(buffer);
-		assertEquals("2009", id3tag.getYear());
-		assertEquals("4/15", id3tag.getTrack());
-		assertEquals("image/png", id3tag.getAlbumImageMimeType());
-		assertEquals(40, id3tag.getGenre());
-		assertEquals("Alt Rock", id3tag.getGenreDescription());
-		assertEquals("NAME1234567890123456789012345678901234567890", id3tag.getTitle());
-		assertEquals("ARTIST1234567890123456789012345678901234567890", id3tag.getArtist());
-		assertEquals("COMPOSER1234567890123456789012345678901234567890", id3tag.getComposer());
-		assertEquals("ALBUM1234567890123456789012345678901234567890", id3tag.getAlbum());
-		assertEquals("COMMENTS1234567890123456789012345678901234567890", id3tag.getComment());
+		assertThat(id3tag.getYear()).isEqualTo("2009");
+		assertThat(id3tag.getTrack()).isEqualTo("4/15");
+		assertThat(id3tag.getAlbumImageMimeType()).isEqualTo("image/png");
+		assertThat(id3tag.getGenre()).isEqualTo(40);
+		assertThat(id3tag.getGenreDescription()).isEqualTo("Alt Rock");
+		assertThat(id3tag.getTitle()).isEqualTo("NAME1234567890123456789012345678901234567890");
+		assertThat(id3tag.getArtist()).isEqualTo("ARTIST1234567890123456789012345678901234567890");
+		assertThat(id3tag.getComposer()).isEqualTo("COMPOSER1234567890123456789012345678901234567890");
+		assertThat(id3tag.getAlbum()).isEqualTo("ALBUM1234567890123456789012345678901234567890");
+		assertThat(id3tag.getComment()).isEqualTo("COMMENTS1234567890123456789012345678901234567890");
 	}
 
 	@Test
-	public void shouldReadTagFieldsWithUnicodeDataFromMp3() throws Exception {
+	void shouldReadTagFieldsWithUnicodeDataFromMp3() throws Exception {
 		byte[] buffer = TestHelper.loadFile("src/test/resources/v23unicodetags.mp3");
 		ID3v2 id3tag = ID3v2TagFactory.createTag(buffer);
-		assertEquals("\u03B3\u03B5\u03B9\u03AC \u03C3\u03BF\u03C5", id3tag.getArtist()); // greek
-		assertEquals("\u4E2D\u6587", id3tag.getTitle()); // chinese
-		assertEquals("\u3053\u3093\u306B\u3061\u306F", id3tag.getAlbum()); // japanese
-		assertEquals("\u0AB9\u0AC7\u0AB2\u0ACD\u0AB2\u0ACB", id3tag.getComposer()); // gujarati
+		assertThat(id3tag.getArtist()).isEqualTo("\u03B3\u03B5\u03B9\u03AC \u03C3\u03BF\u03C5"); // greek
+		assertThat(id3tag.getTitle()).isEqualTo("\u4E2D\u6587"); // chinese
+		assertThat(id3tag.getAlbum()).isEqualTo("\u3053\u3093\u306B\u3061\u306F"); // japanese
+		assertThat(id3tag.getComposer()).isEqualTo("\u0AB9\u0AC7\u0AB2\u0ACD\u0AB2\u0ACB"); // gujarati
 	}
 
 	@Test
-	public void shouldSetTagFieldsWithUnicodeDataAndSpecifiedEncodingCorrectly() throws Exception {
+	void shouldSetTagFieldsWithUnicodeDataAndSpecifiedEncodingCorrectly() throws Exception {
 		ID3v2 id3tag = new ID3v23Tag();
 		id3tag.setArtist("\u03B3\u03B5\u03B9\u03AC \u03C3\u03BF\u03C5");
 		id3tag.setTitle("\u4E2D\u6587");
@@ -372,150 +359,149 @@ public class ID3v2TagTest {
 	}
 
 	@Test
-	public void shouldExtractChapterTOCFramesFromMp3() throws Exception {
+	void shouldExtractChapterTOCFramesFromMp3() throws Exception {
 		byte[] buffer = TestHelper.loadFile("src/test/resources/v23tagwithchapters.mp3");
 		ID3v2 id3tag = ID3v2TagFactory.createTag(buffer);
 
 		ArrayList<ID3v2ChapterTOCFrameData> chapterTOCs = id3tag.getChapterTOC();
-		assertEquals(1, chapterTOCs.size());
+		assertThat(chapterTOCs.size()).isEqualTo(1);
 
 		ID3v2ChapterTOCFrameData tocFrameData = chapterTOCs.get(0);
-		assertEquals("toc1", tocFrameData.getId());
-		String expectedChildren[] = {"ch1", "ch2", "ch3"};
-		assertArrayEquals(expectedChildren, tocFrameData.getChildren());
+		assertThat(tocFrameData.getId()).isEqualTo("toc1");
+		assertThat(tocFrameData.getChildren()).isEqualTo(new String[]{"ch1", "ch2", "ch3"});
 
 		ArrayList<ID3v2Frame> subFrames = tocFrameData.getSubframes();
-		assertEquals(0, subFrames.size());
+		assertThat(subFrames.size()).isEqualTo(0);
 	}
 
 	@Test
-	public void shouldExtractChapterTOCAndChapterFramesFromMp3() throws Exception {
+	void shouldExtractChapterTOCAndChapterFramesFromMp3() throws Exception {
 		byte[] buffer = TestHelper.loadFile("src/test/resources/v23tagwithchapters.mp3");
 		ID3v2 id3tag = ID3v2TagFactory.createTag(buffer);
 
 		ArrayList<ID3v2ChapterFrameData> chapters = id3tag.getChapters();
-		assertEquals(3, chapters.size());
+		assertThat(chapters.size()).isEqualTo(3);
 
 		ID3v2ChapterFrameData chapter1 = chapters.get(0);
-		assertEquals("ch1", chapter1.getId());
-		assertEquals(0, chapter1.getStartTime());
-		assertEquals(5000, chapter1.getEndTime());
-		assertEquals(-1, chapter1.getStartOffset());
-		assertEquals(-1, chapter1.getEndOffset());
+		assertThat(chapter1.getId()).isEqualTo("ch1");
+		assertThat(chapter1.getStartTime()).isEqualTo(0);
+		assertThat(chapter1.getEndTime()).isEqualTo(5000);
+		assertThat(chapter1.getStartOffset()).isEqualTo(-1);
+		assertThat(chapter1.getEndOffset()).isEqualTo(-1);
 
 		ArrayList<ID3v2Frame> subFrames1 = chapter1.getSubframes();
-		assertEquals(1, subFrames1.size());
+		assertThat(subFrames1.size()).isEqualTo(1);
 		ID3v2Frame subFrame1 = subFrames1.get(0);
-		assertEquals("TIT2", subFrame1.getId());
+		assertThat(subFrame1.getId()).isEqualTo("TIT2");
 		ID3v2TextFrameData frameData1 = new ID3v2TextFrameData(false, subFrame1.getData());
-		assertEquals("start", frameData1.getText().toString());
+		assertThat(frameData1.getText().toString()).isEqualTo("start");
 
 		ID3v2ChapterFrameData chapter2 = chapters.get(1);
-		assertEquals("ch2", chapter2.getId());
-		assertEquals(5000, chapter2.getStartTime());
-		assertEquals(10000, chapter2.getEndTime());
-		assertEquals(-1, chapter2.getStartOffset());
-		assertEquals(-1, chapter2.getEndOffset());
+		assertThat(chapter2.getId()).isEqualTo("ch2");
+		assertThat(chapter2.getStartTime()).isEqualTo(5000);
+		assertThat(chapter2.getEndTime()).isEqualTo(10000);
+		assertThat(chapter2.getStartOffset()).isEqualTo(-1);
+		assertThat(chapter2.getEndOffset()).isEqualTo(-1);
 
 		ArrayList<ID3v2Frame> subFrames2 = chapter2.getSubframes();
-		assertEquals(1, subFrames2.size());
+		assertThat(subFrames2.size()).isEqualTo(1);
 		ID3v2Frame subFrame2 = subFrames2.get(0);
-		assertEquals("TIT2", subFrame2.getId());
+		assertThat(subFrame2.getId()).isEqualTo("TIT2");
 		ID3v2TextFrameData frameData2 = new ID3v2TextFrameData(false, subFrame2.getData());
-		assertEquals("5 seconds", frameData2.getText().toString());
+		assertThat(frameData2.getText().toString()).isEqualTo("5 seconds");
 
 		ID3v2ChapterFrameData chapter3 = chapters.get(2);
-		assertEquals("ch3", chapter3.getId());
-		assertEquals(10000, chapter3.getStartTime());
-		assertEquals(15000, chapter3.getEndTime());
-		assertEquals(-1, chapter3.getStartOffset());
-		assertEquals(-1, chapter3.getEndOffset());
+		assertThat(chapter3.getId()).isEqualTo("ch3");
+		assertThat(chapter3.getStartTime()).isEqualTo(10000);
+		assertThat(chapter3.getEndTime()).isEqualTo(15000);
+		assertThat(chapter3.getStartOffset()).isEqualTo(-1);
+		assertThat(chapter3.getEndOffset()).isEqualTo(-1);
 
 		ArrayList<ID3v2Frame> subFrames3 = chapter3.getSubframes();
-		assertEquals(1, subFrames3.size());
+		assertThat(subFrames3.size()).isEqualTo(1);
 		ID3v2Frame subFrame3 = subFrames3.get(0);
-		assertEquals("TIT2", subFrame3.getId());
+		assertThat(subFrame3.getId()).isEqualTo("TIT2");
 		ID3v2TextFrameData frameData3 = new ID3v2TextFrameData(false, subFrame3.getData());
-		assertEquals("10 seconds", frameData3.getText().toString());
+		assertThat(frameData3.getText().toString()).isEqualTo("10 seconds");
 	}
 
 	@Test
-	public void shouldReadTagFieldsFromMp3With32tagResavedByMp3tagWithUTF16Encoding() throws Exception {
+	void shouldReadTagFieldsFromMp3With32tagResavedByMp3tagWithUTF16Encoding() throws Exception {
 		byte[] buffer = TestHelper.loadFile("src/test/resources/v1andv23tagswithalbumimage-utf16le.mp3");
 		ID3v2 id3tag = ID3v2TagFactory.createTag(buffer);
-		assertEquals("1", id3tag.getTrack());
-		assertEquals("ARTIST123456789012345678901234", id3tag.getArtist());
-		assertEquals("TITLE1234567890123456789012345", id3tag.getTitle());
-		assertEquals("ALBUM1234567890123456789012345", id3tag.getAlbum());
-		assertEquals("2001", id3tag.getYear());
-		assertEquals(0x01, id3tag.getGenre());
-		assertEquals("Classic Rock", id3tag.getGenreDescription());
-		assertEquals("COMMENT123456789012345678901", id3tag.getComment());
-		assertEquals("COMPOSER23456789012345678901234", id3tag.getComposer());
-		assertEquals("ORIGARTIST234567890123456789012", id3tag.getOriginalArtist());
-		assertEquals("COPYRIGHT2345678901234567890123", id3tag.getCopyright());
-		assertEquals("URL2345678901234567890123456789", id3tag.getUrl());
-		assertEquals("ENCODER234567890123456789012345", id3tag.getEncoder());
-		assertEquals(1885, id3tag.getAlbumImage().length);
-		assertEquals("image/png", id3tag.getAlbumImageMimeType());
+		assertThat(id3tag.getTrack()).isEqualTo("1");
+		assertThat(id3tag.getArtist()).isEqualTo("ARTIST123456789012345678901234");
+		assertThat(id3tag.getTitle()).isEqualTo("TITLE1234567890123456789012345");
+		assertThat(id3tag.getAlbum()).isEqualTo("ALBUM1234567890123456789012345");
+		assertThat(id3tag.getYear()).isEqualTo("2001");
+		assertThat(id3tag.getGenre()).isEqualTo(0x01);
+		assertThat(id3tag.getGenreDescription()).isEqualTo("Classic Rock");
+		assertThat(id3tag.getComment()).isEqualTo("COMMENT123456789012345678901");
+		assertThat(id3tag.getComposer()).isEqualTo("COMPOSER23456789012345678901234");
+		assertThat(id3tag.getOriginalArtist()).isEqualTo("ORIGARTIST234567890123456789012");
+		assertThat(id3tag.getCopyright()).isEqualTo("COPYRIGHT2345678901234567890123");
+		assertThat(id3tag.getUrl()).isEqualTo("URL2345678901234567890123456789");
+		assertThat(id3tag.getEncoder()).isEqualTo("ENCODER234567890123456789012345");
+		assertThat(id3tag.getAlbumImage().length).isEqualTo(1885);
+		assertThat(id3tag.getAlbumImageMimeType()).isEqualTo("image/png");
 	}
 
 	@Test
-	public void shouldRemoveAlbumImageFrame() throws Exception {
+	void shouldRemoveAlbumImageFrame() throws Exception {
 		byte[] buffer = TestHelper.loadFile("src/test/resources/v1andv23tagswithalbumimage.mp3");
 		ID3v2 id3tag = ID3v2TagFactory.createTag(buffer);
-		assertEquals(1885, id3tag.getAlbumImage().length);
+		assertThat(id3tag.getAlbumImage().length).isEqualTo(1885);
 		id3tag.clearAlbumImage();
-		assertNull(id3tag.getAlbumImage());
+		assertThat(id3tag.getAlbumImage()).isNull();
 	}
 
 	@Test
-	public void shouldReadBPM() throws Exception {
+	void shouldReadBPM() throws Exception {
 		byte[] buffer = TestHelper.loadFile("src/test/resources/v23tagwithbpm.mp3");
 		ID3v2 id3tag = ID3v2TagFactory.createTag(buffer);
-		assertEquals(84, id3tag.getBPM());
+		assertThat(id3tag.getBPM()).isEqualTo(84);
 	}
 
 	@Test
-	public void shouldReadFloatingPointBPM() throws Exception {
+	void shouldReadFloatingPointBPM() throws Exception {
 		byte[] buffer = TestHelper.loadFile("src/test/resources/v23tagwithbpmfloat.mp3");
 		ID3v2 id3tag = ID3v2TagFactory.createTag(buffer);
-		assertEquals(84, id3tag.getBPM());
+		assertThat(id3tag.getBPM()).isEqualTo(84);
 	}
 
 	@Test
-	public void shouldReadFloatingPointBPMWithCommaDelimiter() throws Exception {
+	void shouldReadFloatingPointBPMWithCommaDelimiter() throws Exception {
 		byte[] buffer = TestHelper.loadFile("src/test/resources/v23tagwithbpmfloatwithcomma.mp3");
 		ID3v2 id3tag = ID3v2TagFactory.createTag(buffer);
-		assertEquals(84, id3tag.getBPM());
+		assertThat(id3tag.getBPM()).isEqualTo(84);
 	}
 
 	@Test
-	public void shouldReadWmpRating() throws Exception {
+	void shouldReadWmpRating() throws Exception {
 		byte[] buffer = TestHelper.loadFile("src/test/resources/v23tagwithwmprating.mp3");
 		ID3v2 id3tag = ID3v2TagFactory.createTag(buffer);
-		assertEquals(3, id3tag.getWmpRating());
+		assertThat(id3tag.getWmpRating()).isEqualTo(3);
 	}
 
 	@Test
-	public void shouldWriteWmpRating() throws Exception {
+	void shouldWriteWmpRating() throws Exception {
 		ID3v2 id3tag = new ID3v23Tag();
 		setTagFields(id3tag);
 		final int expectedUnsetValue = -1;
-		assertEquals(expectedUnsetValue, id3tag.getWmpRating());
+		assertThat(id3tag.getWmpRating()).isEqualTo(expectedUnsetValue);
 		final int newValue = 4;
 		id3tag.setWmpRating(newValue);
-		assertEquals(newValue, id3tag.getWmpRating());
+		assertThat(id3tag.getWmpRating()).isEqualTo(newValue);
 	}
 
 	@Test
-	public void shouldIgnoreInvalidWmpRatingOnWrite() throws Exception {
+	void shouldIgnoreInvalidWmpRatingOnWrite() throws Exception {
 		ID3v2 id3tag = new ID3v23Tag();
 		setTagFields(id3tag);
 		final int originalValue = id3tag.getWmpRating();
 		final int invalidValue = 6;
 		id3tag.setWmpRating(invalidValue);
-		assertEquals(originalValue, id3tag.getWmpRating());
+		assertThat(id3tag.getWmpRating()).isEqualTo(originalValue);
 	}
 
 
@@ -549,7 +535,7 @@ public class ID3v2TagTest {
 		return factory.createTag(buffer);
 	}
 
-	class ID3v22TagForTesting extends ID3v22Tag {
+	static class ID3v22TagForTesting extends ID3v22Tag {
 
 		ID3v22TagForTesting(byte[] buffer) throws NoSuchTagException, UnsupportedTagException, InvalidDataException {
 			super(buffer);
@@ -561,7 +547,7 @@ public class ID3v2TagTest {
 		}
 	}
 
-	class ID3v23TagForTesting extends ID3v23Tag {
+	static class ID3v23TagForTesting extends ID3v23Tag {
 
 		ID3v23TagForTesting() {
 			super();
@@ -577,7 +563,7 @@ public class ID3v2TagTest {
 		}
 	}
 
-	class ID3v24TagForTesting extends ID3v24Tag {
+	static class ID3v24TagForTesting extends ID3v24Tag {
 
 		ID3v24TagForTesting(byte[] buffer) throws NoSuchTagException, UnsupportedTagException, InvalidDataException {
 			super(buffer);
@@ -589,7 +575,7 @@ public class ID3v2TagTest {
 		}
 	}
 
-	class ID3v2TagFactoryForTesting {
+	static class ID3v2TagFactoryForTesting {
 
 		static final int MAJOR_VERSION_OFFSET = 3;
 

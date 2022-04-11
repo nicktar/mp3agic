@@ -1,11 +1,11 @@
 package com.mpatric.mp3agic;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class MpegFrameTest {
+class MpegFrameTest {
 
 	private static final byte BYTE_FF = -0x01;
 	private static final byte BYTE_FB = -0x05;
@@ -20,162 +20,133 @@ public class MpegFrameTest {
 	private static final byte BYTE_02 = 0x02;
 
 	@Test
-	public void testBitwiseLeftShiftOperationsOnLong() {
+	void testBitwiseLeftShiftOperationsOnLong() {
 		long original = 0xFFFFFFFE; // 1111 1111 1111 1111 1111 1111 1111 1110
 		long expectedShl1 = 0xFFFFFFFC; // 1111 1111 1111 1111 1111 1111 1111 1100
 		long expectedShl28 = 0xE0000000; // 1110 0000 0000 0000 0000 0000 0000 0000
 		long expectedShl30 = 0x80000000; // 1000 0000 0000 0000 0000 0000 0000 0000
-		assertEquals(expectedShl1, original << 1);
-		assertEquals(expectedShl28, original << 28);
-		assertEquals(expectedShl30, original << 30);
+		assertThat(original << 1).isEqualTo(expectedShl1);
+		assertThat(original << 28).isEqualTo(expectedShl28);
+		assertThat(original << 30).isEqualTo(expectedShl30);
 	}
 
 	@Test
-	public void testBitwiseRightShiftOperationsOnLong() {
+	void testBitwiseRightShiftOperationsOnLong() {
 		long original = 0x80000000; // 1000 0000 0000 0000 0000 0000 0000 0000
 		long expectedShr1 = 0xC0000000; // 1100 0000 0000 0000 0000 0000 0000 0000
 		long expectedShr28 = 0xFFFFFFF8; // 1111 1111 1111 1111 1111 1111 1111 1000
 		long expectedShr30 = 0xFFFFFFFE; // 1111 1111 1111 1111 1111 1111 1111 1110
-		assertEquals(expectedShr1, original >> 1);
-		assertEquals(expectedShr28, original >> 28);
-		assertEquals(expectedShr30, original >> 30);
+		assertThat(original >> 1).isEqualTo(expectedShr1);
+		assertThat(original >> 28).isEqualTo(expectedShr28);
+		assertThat(original >> 30).isEqualTo(expectedShr30);
 	}
 
 	@Test
-	public void testShiftingByteIntoBiggerNumber() {
+	void testShiftingByteIntoBiggerNumber() {
 		byte original = -0x02; // 1111 1110
 		long originalAsLong = (original & 0xFF);
 		byte expectedShl1 = -0x04; // 1111 1100
 		long expectedShl8 = 0x0000FE00; // 0000 0000 0000 0000 1111 1110 0000 0000
 		long expectedShl16 = 0x00FE0000; // 0000 0000 1111 1110 0000 0000 0000 0000
 		long expectedShl23 = 0x7F000000; // 0111 1111 00000 0000 0000 0000 0000 0000
-		assertEquals(expectedShl1, original << 1);
-		assertEquals(254, originalAsLong);
-		assertEquals(expectedShl8, originalAsLong << 8);
-		assertEquals(expectedShl16, originalAsLong << 16);
-		assertEquals(expectedShl23, originalAsLong << 23);
+		assertThat(original << 1).isEqualTo(expectedShl1);
+		assertThat(originalAsLong).isEqualTo(254);
+		assertThat(originalAsLong << 8).isEqualTo(expectedShl8);
+		assertThat(originalAsLong << 16).isEqualTo(expectedShl16);
+		assertThat(originalAsLong << 23).isEqualTo(expectedShl23);
 	}
 
 	@Test
-	public void shouldExtractValidFields() {
+	void shouldExtractValidFields() {
 		MpegFrameForTesting mpegFrame = new MpegFrameForTesting();
-		assertEquals(0x000007FF, mpegFrame.extractField(0xFFE00000, 0xFFE00000L));
-		assertEquals(0x000007FF, mpegFrame.extractField(0xFFEFFFFF, 0xFFE00000L));
-		assertEquals(0x00000055, mpegFrame.extractField(0x11111155, 0x000000FFL));
-		assertEquals(0x00000055, mpegFrame.extractField(0xFFEFFF55, 0x000000FFL));
+		assertThat(mpegFrame.extractField(0xFFE00000, 0xFFE00000L)).isEqualTo(0x000007FF);
+		assertThat(mpegFrame.extractField(0xFFEFFFFF, 0xFFE00000L)).isEqualTo(0x000007FF);
+		assertThat(mpegFrame.extractField(0x11111155, 0x000000FFL)).isEqualTo(0x00000055);
+		assertThat(mpegFrame.extractField(0xFFEFFF55, 0x000000FFL)).isEqualTo(0x00000055);
 	}
 
 	@Test
-	public void shouldExtractValidMpegVersion1Header() throws InvalidDataException {
+	void shouldExtractValidMpegVersion1Header() throws InvalidDataException {
 		byte[] frameData = {BYTE_FF, BYTE_FB, BYTE_A2, BYTE_40};
 		MpegFrameForTesting mpegFrame = new MpegFrameForTesting(frameData);
-		assertEquals(MpegFrame.MPEG_VERSION_1_0, mpegFrame.getVersion());
-		assertEquals(MpegFrame.MPEG_LAYER_3, mpegFrame.getLayer());
-		assertEquals(160, mpegFrame.getBitrate());
-		assertEquals(44100, mpegFrame.getSampleRate());
-		assertEquals(MpegFrame.CHANNEL_MODE_JOINT_STEREO, mpegFrame.getChannelMode());
-		assertEquals("None", mpegFrame.getModeExtension());
-		assertEquals("None", mpegFrame.getEmphasis());
-		assertEquals(true, mpegFrame.isProtection());
-		assertEquals(true, mpegFrame.hasPadding());
-		assertEquals(false, mpegFrame.isPrivate());
-		assertEquals(false, mpegFrame.isCopyright());
-		assertEquals(false, mpegFrame.isOriginal());
-		assertEquals(523, mpegFrame.getLengthInBytes());
+		assertThat(mpegFrame.getVersion()).isEqualTo(MpegFrame.MPEG_VERSION_1_0);
+		assertThat(mpegFrame.getLayer()).isEqualTo(MpegFrame.MPEG_LAYER_3);
+		assertThat(mpegFrame.getBitrate()).isEqualTo(160);
+		assertThat(mpegFrame.getSampleRate()).isEqualTo(44100);
+		assertThat(mpegFrame.getChannelMode()).isEqualTo(MpegFrame.CHANNEL_MODE_JOINT_STEREO);
+		assertThat(mpegFrame.getModeExtension()).isEqualTo("None");
+		assertThat(mpegFrame.getEmphasis()).isEqualTo("None");
+		assertThat(mpegFrame.isProtection()).isEqualTo(true);
+		assertThat(mpegFrame.hasPadding()).isEqualTo(true);
+		assertThat(mpegFrame.isPrivate()).isEqualTo(false);
+		assertThat(mpegFrame.isCopyright()).isEqualTo(false);
+		assertThat(mpegFrame.isOriginal()).isEqualTo(false);
+		assertThat(mpegFrame.getLengthInBytes()).isEqualTo(523);
 	}
 
 	@Test
-	public void shouldProcessValidMpegVersion2Header() throws InvalidDataException {
+	void shouldProcessValidMpegVersion2Header() throws InvalidDataException {
 		byte[] frameData = {BYTE_FF, BYTE_F3, BYTE_A2, BYTE_40};
 		MpegFrameForTesting mpegFrame = new MpegFrameForTesting(frameData);
-		assertEquals(MpegFrame.MPEG_VERSION_2_0, mpegFrame.getVersion());
-		assertEquals(MpegFrame.MPEG_LAYER_3, mpegFrame.getLayer());
-		assertEquals(96, mpegFrame.getBitrate());
-		assertEquals(22050, mpegFrame.getSampleRate());
-		assertEquals(MpegFrame.CHANNEL_MODE_JOINT_STEREO, mpegFrame.getChannelMode());
-		assertEquals("None", mpegFrame.getModeExtension());
-		assertEquals("None", mpegFrame.getEmphasis());
-		assertEquals(true, mpegFrame.isProtection());
-		assertEquals(true, mpegFrame.hasPadding());
-		assertEquals(false, mpegFrame.isPrivate());
-		assertEquals(false, mpegFrame.isCopyright());
-		assertEquals(false, mpegFrame.isOriginal());
-		assertEquals(627, mpegFrame.getLengthInBytes());
+		assertThat(mpegFrame.getVersion()).isEqualTo(MpegFrame.MPEG_VERSION_2_0);
+		assertThat(mpegFrame.getLayer()).isEqualTo(MpegFrame.MPEG_LAYER_3);
+		assertThat(mpegFrame.getBitrate()).isEqualTo(96);
+		assertThat(mpegFrame.getSampleRate()).isEqualTo(22050);
+		assertThat(mpegFrame.getChannelMode()).isEqualTo(MpegFrame.CHANNEL_MODE_JOINT_STEREO);
+		assertThat(mpegFrame.getModeExtension()).isEqualTo("None");
+		assertThat(mpegFrame.getEmphasis()).isEqualTo("None");
+		assertThat(mpegFrame.isProtection()).isEqualTo(true);
+		assertThat(mpegFrame.hasPadding()).isEqualTo(true);
+		assertThat(mpegFrame.isPrivate()).isEqualTo(false);
+		assertThat(mpegFrame.isCopyright()).isEqualTo(false);
+		assertThat(mpegFrame.isOriginal()).isEqualTo(false);
+		assertThat(mpegFrame.getLengthInBytes()).isEqualTo(627);
 	}
 
 	@Test
-	public void shouldThrowExceptionForInvalidFrameSync() {
+	void shouldThrowExceptionForInvalidFrameSync() {
 		byte[] frameData = {BYTE_FF, BYTE_DB, BYTE_A2, BYTE_40};
-		try {
-			new MpegFrameForTesting(frameData);
-			fail("InvalidDataException expected but not thrown");
-		} catch (InvalidDataException e) {
-			assertEquals("Frame sync missing", e.getMessage());
-		}
+		assertThrows(InvalidDataException.class, () -> new MpegFrameForTesting(frameData));
 	}
 
 	@Test
-	public void shouldThrowExceptionForInvalidMpegVersion() {
+	void shouldThrowExceptionForInvalidMpegVersion() {
 		byte[] frameData = {BYTE_FF, BYTE_EB, BYTE_A2, BYTE_40};
-		try {
-			new MpegFrameForTesting(frameData);
-			fail("InvalidDataException expected but not thrown");
-		} catch (InvalidDataException e) {
-			assertEquals("Invalid mpeg audio version in frame header", e.getMessage());
-		}
+		assertThrows(InvalidDataException.class, () -> new MpegFrameForTesting(frameData));
 	}
 
 	@Test
-	public void shouldThrowExceptionForInvalidMpegLayer() {
+	void shouldThrowExceptionForInvalidMpegLayer() {
 		byte[] frameData = {BYTE_FF, BYTE_F9, BYTE_A2, BYTE_40};
-		try {
-			new MpegFrameForTesting(frameData);
-			fail("InvalidDataException expected but not thrown");
-		} catch (InvalidDataException e) {
-			assertEquals("Invalid mpeg layer description in frame header", e.getMessage());
-		}
+		assertThrows(InvalidDataException.class, () -> new MpegFrameForTesting(frameData));
 	}
 
 	@Test
-	public void shouldThrowExceptionForFreeBitrate() {
+	void shouldThrowExceptionForFreeBitrate() {
 		byte[] frameData = {BYTE_FF, BYTE_FB, BYTE_02, BYTE_40};
-		try {
-			new MpegFrameForTesting(frameData);
-			fail("InvalidDataException expected but not thrown");
-		} catch (InvalidDataException e) {
-			assertEquals("Invalid bitrate in frame header", e.getMessage());
-		}
+		assertThrows(InvalidDataException.class, () -> new MpegFrameForTesting(frameData));
 	}
 
 	@Test
-	public void shouldThrowExceptionForInvalidBitrate() {
+	void shouldThrowExceptionForInvalidBitrate() {
 		byte[] frameData = {BYTE_FF, BYTE_FB, BYTE_F2, BYTE_40};
-		try {
-			new MpegFrameForTesting(frameData);
-			fail("InvalidDataException expected but not thrown");
-		} catch (InvalidDataException e) {
-			assertEquals("Invalid bitrate in frame header", e.getMessage());
-		}
+		assertThrows(InvalidDataException.class, () -> new MpegFrameForTesting(frameData));
 	}
 
 	@Test
-	public void shouldThrowExceptionForInvalidSampleRate() {
+	void shouldThrowExceptionForInvalidSampleRate() {
 		byte[] frameData = {BYTE_FF, BYTE_FB, BYTE_AE, BYTE_40};
-		try {
-			new MpegFrameForTesting(frameData);
-			fail("InvalidDataException expected but not thrown");
-		} catch (InvalidDataException e) {
-			assertEquals("Invalid sample rate in frame header", e.getMessage());
-		}
+		assertThrows(InvalidDataException.class, () -> new MpegFrameForTesting(frameData));
 	}
 
-	class MpegFrameForTesting extends MpegFrame {
+	static class MpegFrameForTesting extends MpegFrame {
 
-		public MpegFrameForTesting() {
+		MpegFrameForTesting() {
 			super();
 		}
 
-		public MpegFrameForTesting(byte[] frameData) throws InvalidDataException {
+
+		MpegFrameForTesting(byte[] frameData) throws InvalidDataException {
 			super(frameData);
 		}
 

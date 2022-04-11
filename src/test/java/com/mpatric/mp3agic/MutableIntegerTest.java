@@ -1,74 +1,74 @@
 package com.mpatric.mp3agic;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 
-public class MutableIntegerTest {
+class MutableIntegerTest {
 	@Test
-	public void initializesValue() {
+	void initializesValue() {
 		MutableInteger integer = new MutableInteger(8);
-		assertEquals(8, integer.getValue());
+		assertThat(integer.getValue()).isEqualTo(8);
 	}
 
 	@Test
-	public void incrementsValue() {
+	void incrementsValue() {
 		MutableInteger integer = new MutableInteger(8);
 		integer.increment();
-		assertEquals(9, integer.getValue());
+		assertThat(integer.getValue()).isEqualTo(9);
 	}
 
 	@Test
-	public void setsValue() {
+	void setsValue() {
 		MutableInteger integer = new MutableInteger(8);
 		integer.setValue(5);
-		assertEquals(5, integer.getValue());
+		assertThat(integer.getValue()).isEqualTo(5);
 	}
 
 	@Test
-	public void equalsItself() {
+	void equalsItself() {
 		MutableInteger integer = new MutableInteger(8);
-		assertEquals(integer, integer);
+		assertThat(integer).isEqualTo(integer);
 	}
 
 	@Test
-	public void equalIfValueEqual() {
+	void equalIfValueEqual() {
 		MutableInteger eight = new MutableInteger(8);
 		MutableInteger eightAgain = new MutableInteger(8);
-		assertEquals(eight, eightAgain);
+		assertThat(eightAgain).isEqualTo(eight);
 	}
 
 	@Test
-	public void notEqualToNull() {
+	void notEqualToNull() {
 		MutableInteger integer = new MutableInteger(8);
 		assertFalse(integer.equals(null));
 	}
 
 	@Test
-	public void notEqualToDifferentClass() {
+	void notEqualToDifferentClass() {
 		MutableInteger integer = new MutableInteger(8);
 		assertFalse(integer.equals("8"));
 	}
 
 	@Test
-	public void notEqualIfValueNotEqual() {
+	void notEqualIfValueNotEqual() {
 		MutableInteger eight = new MutableInteger(8);
 		MutableInteger nine = new MutableInteger(9);
 		assertNotEquals(eight, nine);
 	}
 
 	@Test
-	public void hashCodeIsConsistent() {
+	void hashCodeIsConsistent() {
 		MutableInteger integer = new MutableInteger(8);
-		assertEquals(integer.hashCode(), integer.hashCode());
+		assertThat(integer.hashCode()).isEqualTo(integer.hashCode());
 	}
 
 	@Test
-	public void equalObjectsHaveSameHashCode() {
+	void equalObjectsHaveSameHashCode() {
 		MutableInteger eight = new MutableInteger(8);
 		MutableInteger eightAgain = new MutableInteger(8);
-		assertEquals(eight.hashCode(), eightAgain.hashCode());
+		assertThat(eightAgain.hashCode()).isEqualTo(eight.hashCode());
 	}
 }

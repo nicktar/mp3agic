@@ -1,14 +1,14 @@
 package com.mpatric.mp3agic;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class ID3v2WWWFrameDataTest {
+class ID3v2WWWFrameDataTest {
 	@Test
-	public void getsAndSetsId() {
+	void getsAndSetsId() {
 		ID3v2WWWFrameData frameData = new ID3v2WWWFrameData(false);
 		frameData.setUrl("My URL");
-		assertEquals("My URL", frameData.getUrl());
+		assertThat(frameData.getUrl()).isEqualTo("My URL");
 	}
 }

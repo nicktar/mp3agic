@@ -1,127 +1,124 @@
 package com.mpatric.mp3agic;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class ID3WrapperTest {
+
+class ID3WrapperTest {
 	//region getId3v1Tag
 	@Test
-	public void returnsV1Tag() {
+	void returnsV1Tag() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals(id3v1Tag, wrapper.getId3v1Tag());
+		assertThat(wrapper.getId3v1Tag()).isEqualTo(id3v1Tag);
 	}
 
 	@Test
-	public void returnsNullV1Tag() {
+	void returnsNullV1Tag() {
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(null, id3v2Tag);
-		assertEquals(null, wrapper.getId3v1Tag());
+		assertThat(wrapper.getId3v1Tag()).isEqualTo(null);
 	}
 	//endregion
 
 	//region getId3v2Tag
 	@Test
-	public void returnsV2Tag() {
+	void returnsV2Tag() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals(id3v2Tag, wrapper.getId3v2Tag());
+		assertThat(wrapper.getId3v2Tag()).isEqualTo(id3v2Tag);
 	}
 
 	@Test
-	public void returnsNullV2Tag() {
+	void returnsNullV2Tag() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
-		assertEquals(null, wrapper.getId3v2Tag());
+		assertThat(wrapper.getId3v2Tag()).isEqualTo(null);
 	}
 	//endregion
 
 	//region getTrack
 	@Test
-	public void getTrackReturnsV2TagsTrackBeforeV1TagsTrack() {
+	void getTrackReturnsV2TagsTrackBeforeV1TagsTrack() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setTrack("V1 Track");
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setTrack("V2 Track");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V2 Track", wrapper.getTrack());
+		assertThat(wrapper.getTrack()).isEqualTo("V2 Track");
 	}
 
 	@Test
-	public void getTrackReturnsV1TagsTrackIfV2TagsTrackIsEmpty() {
+	void getTrackReturnsV1TagsTrackIfV2TagsTrackIsEmpty() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setTrack("V1 Track");
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setTrack("");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V1 Track", wrapper.getTrack());
+		assertThat(wrapper.getTrack()).isEqualTo("V1 Track");
 	}
 
 	@Test
-	public void getTrackReturnsV1TagsTrackIfV2TagsTrackDoesNotExist() {
+	void getTrackReturnsV1TagsTrackIfV2TagsTrackDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setTrack("V1 Track");
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setTrack(null);
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V1 Track", wrapper.getTrack());
+		assertThat(wrapper.getTrack()).isEqualTo("V1 Track");
 	}
 
 	@Test
-	public void getTrackReturnsV1TagsTrackIfV2TagDoesNotExist() {
+	void getTrackReturnsV1TagsTrackIfV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setTrack("V1 Track");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
-		assertEquals("V1 Track", wrapper.getTrack());
+		assertThat(wrapper.getTrack()).isEqualTo("V1 Track");
 	}
 
 	@Test
-	public void getTrackReturnsNullIfBothTagsDoNotExist() {
+	void getTrackReturnsNullIfBothTagsDoNotExist() {
 		ID3Wrapper wrapper = new ID3Wrapper(null, null);
-		assertNull(wrapper.getTrack());
+		assertThat(wrapper.getTrack()).isNull();
 	}
 	//endregion
 
 	//region setTrack
 	@Test
-	public void setsTrackOnBothV1AndV2Tags() {
+	void setsTrackOnBothV1AndV2Tags() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
 		wrapper.setTrack("a track");
-		assertEquals("a track", id3v1Tag.getTrack());
-		assertEquals("a track", id3v2Tag.getTrack());
+		assertThat(id3v1Tag.getTrack()).isEqualTo("a track");
+		assertThat(id3v2Tag.getTrack()).isEqualTo("a track");
 	}
 
 	@Test
-	public void setsTrackOnV1TagOnly() {
+	void setsTrackOnV1TagOnly() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
 		wrapper.setTrack("a track");
-		assertEquals("a track", id3v1Tag.getTrack());
+		assertThat(id3v1Tag.getTrack()).isEqualTo("a track");
 	}
 
 	@Test
-	public void setsTrackOnV2TagOnly() {
+	void setsTrackOnV2TagOnly() {
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(null, id3v2Tag);
 		wrapper.setTrack("a track");
-		assertEquals("a track", id3v2Tag.getTrack());
+		assertThat(id3v2Tag.getTrack()).isEqualTo("a track");
 	}
 
 	@Test
-	public void setTrackDoesNotThrowExceptionWhenBothTagsDoNotExist() {
+	void setTrackDoesNotThrowExceptionWhenBothTagsDoNotExist() {
 		ID3Wrapper wrapper = new ID3Wrapper(null, null);
 		wrapper.setTrack("a track");
 	}
@@ -129,79 +126,79 @@ public class ID3WrapperTest {
 
 	//region getArtist
 	@Test
-	public void getArtistReturnsV2TagsArtistBeforeV1TagsArtist() {
+	void getArtistReturnsV2TagsArtistBeforeV1TagsArtist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setArtist("V1 Artist");
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setArtist("V2 Artist");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V2 Artist", wrapper.getArtist());
+		assertThat(wrapper.getArtist()).isEqualTo("V2 Artist");
 	}
 
 	@Test
-	public void getArtistReturnsV1TagsArtistIfV2TagsArtistIsEmpty() {
+	void getArtistReturnsV1TagsArtistIfV2TagsArtistIsEmpty() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setArtist("V1 Artist");
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setArtist("");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V1 Artist", wrapper.getArtist());
+		assertThat(wrapper.getArtist()).isEqualTo("V1 Artist");
 	}
 
 	@Test
-	public void getArtistReturnsV1TagsArtistIfV2TagsArtistDoesNotExist() {
+	void getArtistReturnsV1TagsArtistIfV2TagsArtistDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setArtist("V1 Artist");
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setArtist(null);
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V1 Artist", wrapper.getArtist());
+		assertThat(wrapper.getArtist()).isEqualTo("V1 Artist");
 	}
 
 	@Test
-	public void getArtistReturnsV1TagsArtistIfV2TagDoesNotExist() {
+	void getArtistReturnsV1TagsArtistIfV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setArtist("V1 Artist");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
-		assertEquals("V1 Artist", wrapper.getArtist());
+		assertThat(wrapper.getArtist()).isEqualTo("V1 Artist");
 	}
 
 	@Test
-	public void getArtistReturnsNullIfBothTagsDoNotExist() {
+	void getArtistReturnsNullIfBothTagsDoNotExist() {
 		ID3Wrapper wrapper = new ID3Wrapper(null, null);
-		assertNull(wrapper.getArtist());
+		assertThat(wrapper.getArtist()).isNull();
 	}
 	//endregion
 
 	//region setArtist
 	@Test
-	public void setsArtistOnBothV1AndV2Tags() {
+	void setsArtistOnBothV1AndV2Tags() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
 		wrapper.setArtist("an artist");
-		assertEquals("an artist", id3v1Tag.getArtist());
-		assertEquals("an artist", id3v2Tag.getArtist());
+		assertThat(id3v1Tag.getArtist()).isEqualTo("an artist");
+		assertThat(id3v2Tag.getArtist()).isEqualTo("an artist");
 	}
 
 	@Test
-	public void setsArtistOnV1TagOnly() {
+	void setsArtistOnV1TagOnly() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
 		wrapper.setArtist("an artist");
-		assertEquals("an artist", id3v1Tag.getArtist());
+		assertThat(id3v1Tag.getArtist()).isEqualTo("an artist");
 	}
 
 	@Test
-	public void setsArtistOnV2TagOnly() {
+	void setsArtistOnV2TagOnly() {
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(null, id3v2Tag);
 		wrapper.setArtist("an artist");
-		assertEquals("an artist", id3v2Tag.getArtist());
+		assertThat(id3v2Tag.getArtist()).isEqualTo("an artist");
 	}
 
 	@Test
-	public void setArtistDoesNotThrowExceptionWhenBothTagsDoNotExist() {
+	void setArtistDoesNotThrowExceptionWhenBothTagsDoNotExist() {
 		ID3Wrapper wrapper = new ID3Wrapper(null, null);
 		wrapper.setArtist("an artist");
 	}
@@ -209,79 +206,79 @@ public class ID3WrapperTest {
 
 	//region getTitle
 	@Test
-	public void getTitleReturnsV2TagsTitleBeforeV1TagsTitle() {
+	void getTitleReturnsV2TagsTitleBeforeV1TagsTitle() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setTitle("V1 Title");
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setTitle("V2 Title");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V2 Title", wrapper.getTitle());
+		assertThat(wrapper.getTitle()).isEqualTo("V2 Title");
 	}
 
 	@Test
-	public void getTitleReturnsV1TagsTitleIfV2TagsTitleIsEmpty() {
+	void getTitleReturnsV1TagsTitleIfV2TagsTitleIsEmpty() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setTitle("V1 Title");
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setTitle("");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V1 Title", wrapper.getTitle());
+		assertThat(wrapper.getTitle()).isEqualTo("V1 Title");
 	}
 
 	@Test
-	public void getTitleReturnsV1TagsTitleIfV2TagsTitleDoesNotExist() {
+	void getTitleReturnsV1TagsTitleIfV2TagsTitleDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setTitle("V1 Title");
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setTitle(null);
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V1 Title", wrapper.getTitle());
+		assertThat(wrapper.getTitle()).isEqualTo("V1 Title");
 	}
 
 	@Test
-	public void getTitleReturnsV1TagsTitleIfV2TagDoesNotExist() {
+	void getTitleReturnsV1TagsTitleIfV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setTitle("V1 Title");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
-		assertEquals("V1 Title", wrapper.getTitle());
+		assertThat(wrapper.getTitle()).isEqualTo("V1 Title");
 	}
 
 	@Test
-	public void getTitleReturnsNullIfBothTagsDoNotExist() {
+	void getTitleReturnsNullIfBothTagsDoNotExist() {
 		ID3Wrapper wrapper = new ID3Wrapper(null, null);
-		assertNull(wrapper.getTitle());
+		assertThat(wrapper.getTitle()).isNull();
 	}
 	//endregion
 
 	//region setTitle
 	@Test
-	public void setsTitleOnBothV1AndV2Tags() {
+	void setsTitleOnBothV1AndV2Tags() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
 		wrapper.setTitle("a title");
-		assertEquals("a title", id3v1Tag.getTitle());
-		assertEquals("a title", id3v2Tag.getTitle());
+		assertThat(id3v1Tag.getTitle()).isEqualTo("a title");
+		assertThat(id3v2Tag.getTitle()).isEqualTo("a title");
 	}
 
 	@Test
-	public void setsTitleOnV1TagOnly() {
+	void setsTitleOnV1TagOnly() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
 		wrapper.setTitle("a title");
-		assertEquals("a title", id3v1Tag.getTitle());
+		assertThat(id3v1Tag.getTitle()).isEqualTo("a title");
 	}
 
 	@Test
-	public void setsTitleOnV2TagOnly() {
+	void setsTitleOnV2TagOnly() {
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(null, id3v2Tag);
 		wrapper.setTitle("a title");
-		assertEquals("a title", id3v2Tag.getTitle());
+		assertThat(id3v2Tag.getTitle()).isEqualTo("a title");
 	}
 
 	@Test
-	public void setTitleDoesNotThrowExceptionWhenBothTagsDoNotExist() {
+	void setTitleDoesNotThrowExceptionWhenBothTagsDoNotExist() {
 		ID3Wrapper wrapper = new ID3Wrapper(null, null);
 		wrapper.setTitle("a title");
 	}
@@ -289,79 +286,79 @@ public class ID3WrapperTest {
 
 	//region getAlbum
 	@Test
-	public void getAlbumReturnsV2TagsAlbumBeforeV1TagsAlbum() {
+	void getAlbumReturnsV2TagsAlbumBeforeV1TagsAlbum() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setAlbum("V1 Album");
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setAlbum("V2 Album");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V2 Album", wrapper.getAlbum());
+		assertThat(wrapper.getAlbum()).isEqualTo("V2 Album");
 	}
 
 	@Test
-	public void getAlbumReturnsV1TagsAlbumIfV2TagsAlbumIsEmpty() {
+	void getAlbumReturnsV1TagsAlbumIfV2TagsAlbumIsEmpty() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setAlbum("V1 Album");
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setAlbum("");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V1 Album", wrapper.getAlbum());
+		assertThat(wrapper.getAlbum()).isEqualTo("V1 Album");
 	}
 
 	@Test
-	public void getAlbumReturnsV1TagsAlbumIfV2TagsAlbumDoesNotExist() {
+	void getAlbumReturnsV1TagsAlbumIfV2TagsAlbumDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setAlbum("V1 Album");
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setAlbum(null);
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V1 Album", wrapper.getAlbum());
+		assertThat(wrapper.getAlbum()).isEqualTo("V1 Album");
 	}
 
 	@Test
-	public void getAlbumReturnsV1TagsAlbumIfV2TagDoesNotExist() {
+	void getAlbumReturnsV1TagsAlbumIfV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setAlbum("V1 Album");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
-		assertEquals("V1 Album", wrapper.getAlbum());
+		assertThat(wrapper.getAlbum()).isEqualTo("V1 Album");
 	}
 
 	@Test
-	public void getAlbumReturnsNullIfBothTagsDoNotExist() {
+	void getAlbumReturnsNullIfBothTagsDoNotExist() {
 		ID3Wrapper wrapper = new ID3Wrapper(null, null);
-		assertNull(wrapper.getAlbum());
+		assertThat(wrapper.getAlbum()).isNull();
 	}
 	//endregion
 
 	//region setAlbum
 	@Test
-	public void setsAlbumOnBothV1AndV2Tags() {
+	void setsAlbumOnBothV1AndV2Tags() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
 		wrapper.setAlbum("an album");
-		assertEquals("an album", id3v1Tag.getAlbum());
-		assertEquals("an album", id3v2Tag.getAlbum());
+		assertThat(id3v1Tag.getAlbum()).isEqualTo("an album");
+		assertThat(id3v2Tag.getAlbum()).isEqualTo("an album");
 	}
 
 	@Test
-	public void setsAlbumOnV1TagOnly() {
+	void setsAlbumOnV1TagOnly() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
 		wrapper.setAlbum("an album");
-		assertEquals("an album", id3v1Tag.getAlbum());
+		assertThat(id3v1Tag.getAlbum()).isEqualTo("an album");
 	}
 
 	@Test
-	public void setsAlbumOnV2TagOnly() {
+	void setsAlbumOnV2TagOnly() {
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(null, id3v2Tag);
 		wrapper.setAlbum("an album");
-		assertEquals("an album", id3v2Tag.getAlbum());
+		assertThat(id3v2Tag.getAlbum()).isEqualTo("an album");
 	}
 
 	@Test
-	public void setAlbumDoesNotThrowExceptionWhenBothTagsDoNotExist() {
+	void setAlbumDoesNotThrowExceptionWhenBothTagsDoNotExist() {
 		ID3Wrapper wrapper = new ID3Wrapper(null, null);
 		wrapper.setAlbum("an album");
 	}
@@ -369,79 +366,79 @@ public class ID3WrapperTest {
 
 	//region getYear
 	@Test
-	public void getYearReturnsV2TagsYearBeforeV1TagsYear() {
+	void getYearReturnsV2TagsYearBeforeV1TagsYear() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setYear("V1 Year");
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setYear("V2 Year");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V2 Year", wrapper.getYear());
+		assertThat(wrapper.getYear()).isEqualTo("V2 Year");
 	}
 
 	@Test
-	public void getYearReturnsV1TagsYearIfV2TagsYearIsEmpty() {
+	void getYearReturnsV1TagsYearIfV2TagsYearIsEmpty() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setYear("V1 Year");
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setYear("");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V1 Year", wrapper.getYear());
+		assertThat(wrapper.getYear()).isEqualTo("V1 Year");
 	}
 
 	@Test
-	public void getYearReturnsV1TagsYearIfV2TagsYearDoesNotExist() {
+	void getYearReturnsV1TagsYearIfV2TagsYearDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setYear("V1 Year");
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setYear(null);
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V1 Year", wrapper.getYear());
+		assertThat(wrapper.getYear()).isEqualTo("V1 Year");
 	}
 
 	@Test
-	public void getYearReturnsV1TagsYearIfV2TagDoesNotExist() {
+	void getYearReturnsV1TagsYearIfV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setYear("V1 Year");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
-		assertEquals("V1 Year", wrapper.getYear());
+		assertThat(wrapper.getYear()).isEqualTo("V1 Year");
 	}
 
 	@Test
-	public void getYearReturnsNullIfBothTagsDoNotExist() {
+	void getYearReturnsNullIfBothTagsDoNotExist() {
 		ID3Wrapper wrapper = new ID3Wrapper(null, null);
-		assertNull(wrapper.getYear());
+		assertThat(wrapper.getYear()).isNull();
 	}
 	//endregion
 
 	//region setYear
 	@Test
-	public void setsYearOnBothV1AndV2Tags() {
+	void setsYearOnBothV1AndV2Tags() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
 		wrapper.setYear("a year");
-		assertEquals("a year", id3v1Tag.getYear());
-		assertEquals("a year", id3v2Tag.getYear());
+		assertThat(id3v1Tag.getYear()).isEqualTo("a year");
+		assertThat(id3v2Tag.getYear()).isEqualTo("a year");
 	}
 
 	@Test
-	public void setsYearOnV1TagOnly() {
+	void setsYearOnV1TagOnly() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
 		wrapper.setYear("a year");
-		assertEquals("a year", id3v1Tag.getYear());
+		assertThat(id3v1Tag.getYear()).isEqualTo("a year");
 	}
 
 	@Test
-	public void setsYearOnV2TagOnly() {
+	void setsYearOnV2TagOnly() {
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(null, id3v2Tag);
 		wrapper.setYear("a year");
-		assertEquals("a year", id3v2Tag.getYear());
+		assertThat(id3v2Tag.getYear()).isEqualTo("a year");
 	}
 
 	@Test
-	public void setYearDoesNotThrowExceptionWhenBothTagsDoNotExist() {
+	void setYearDoesNotThrowExceptionWhenBothTagsDoNotExist() {
 		ID3Wrapper wrapper = new ID3Wrapper(null, null);
 		wrapper.setYear("a year");
 	}
@@ -449,69 +446,69 @@ public class ID3WrapperTest {
 
 	//region getGenre
 	@Test
-	public void getGenreReturnsV2TagsGenreBeforeV1TagsGenre() {
+	void getGenreReturnsV2TagsGenreBeforeV1TagsGenre() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setGenre(10);
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setGenre(20);
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals(20, wrapper.getGenre());
+		assertThat(wrapper.getGenre()).isEqualTo(20);
 	}
 
 	@Test
-	public void getGenreReturnsV1TagsGenreIfV2TagsGenreIsNegativeOne() {
+	void getGenreReturnsV1TagsGenreIfV2TagsGenreIsNegativeOne() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setGenre(10);
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setGenre(-1);
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals(10, wrapper.getGenre());
+		assertThat(wrapper.getGenre()).isEqualTo(10);
 	}
 
 	@Test
-	public void getGenreReturnsV1TagsGenreIfV2TagDoesNotExist() {
+	void getGenreReturnsV1TagsGenreIfV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setGenre(10);
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
-		assertEquals(10, wrapper.getGenre());
+		assertThat(wrapper.getGenre()).isEqualTo(10);
 	}
 
 	@Test
-	public void getGenreReturnsNegativeOneIfBothTagsDoNotExist() {
+	void getGenreReturnsNegativeOneIfBothTagsDoNotExist() {
 		ID3Wrapper wrapper = new ID3Wrapper(null, null);
-		assertEquals(-1, wrapper.getGenre());
+		assertThat(wrapper.getGenre()).isEqualTo(-1);
 	}
 	//endregion
 
 	//region setGenre
 	@Test
-	public void setsGenreOnBothV1AndV2Tags() {
+	void setsGenreOnBothV1AndV2Tags() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
 		wrapper.setGenre(22);
-		assertEquals(22, id3v1Tag.getGenre());
-		assertEquals(22, id3v2Tag.getGenre());
+		assertThat(id3v1Tag.getGenre()).isEqualTo(22);
+		assertThat(id3v2Tag.getGenre()).isEqualTo(22);
 	}
 
 	@Test
-	public void setsGenreOnV1TagOnly() {
+	void setsGenreOnV1TagOnly() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
 		wrapper.setGenre(22);
-		assertEquals(22, id3v1Tag.getGenre());
+		assertThat(id3v1Tag.getGenre()).isEqualTo(22);
 	}
 
 	@Test
-	public void setsGenreOnV2TagOnly() {
+	void setsGenreOnV2TagOnly() {
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(null, id3v2Tag);
 		wrapper.setGenre(22);
-		assertEquals(22, id3v2Tag.getGenre());
+		assertThat(id3v2Tag.getGenre()).isEqualTo(22);
 	}
 
 	@Test
-	public void setGenreDoesNotThrowExceptionWhenBothTagsDoNotExist() {
+	void setGenreDoesNotThrowExceptionWhenBothTagsDoNotExist() {
 		ID3Wrapper wrapper = new ID3Wrapper(null, null);
 		wrapper.setGenre(22);
 	}
@@ -519,105 +516,105 @@ public class ID3WrapperTest {
 
 	//region getGenreDescription
 	@Test
-	public void getGenreDescriptionReturnsV2TagsGenreDescriptionBeforeV1TagsGenreDescription() {
+	void getGenreDescriptionReturnsV2TagsGenreDescriptionBeforeV1TagsGenreDescription() {
 		ID3v1TagForTesting id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setGenreDescription("V1 GenreDescription");
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setGenreDescription("V2 GenreDescription");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V2 GenreDescription", wrapper.getGenreDescription());
+		assertThat(wrapper.getGenreDescription()).isEqualTo("V2 GenreDescription");
 	}
 
 	@Test
-	public void getGenreDescriptionReturnsV1TagsGenreDescriptionIfV2TagDoesNotExist() {
+	void getGenreDescriptionReturnsV1TagsGenreDescriptionIfV2TagDoesNotExist() {
 		ID3v1TagForTesting id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setGenreDescription("V1 GenreDescription");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
-		assertEquals("V1 GenreDescription", wrapper.getGenreDescription());
+		assertThat(wrapper.getGenreDescription()).isEqualTo("V1 GenreDescription");
 	}
 
 	@Test
-	public void getGenreDescriptionReturnsNullIfBothTagsDoNotExist() {
+	void getGenreDescriptionReturnsNullIfBothTagsDoNotExist() {
 		ID3Wrapper wrapper = new ID3Wrapper(null, null);
-		assertNull(wrapper.getGenreDescription());
+		assertThat(wrapper.getGenreDescription()).isNull();
 	}
 	//endregion
 
 	//region getComment
 	@Test
-	public void getCommentReturnsV2TagsCommentBeforeV1TagsComment() {
+	void getCommentReturnsV2TagsCommentBeforeV1TagsComment() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setComment("V1 Comment");
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setComment("V2 Comment");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V2 Comment", wrapper.getComment());
+		assertThat(wrapper.getComment()).isEqualTo("V2 Comment");
 	}
 
 	@Test
-	public void getCommentReturnsV1TagsCommentIfV2TagsCommentIsEmpty() {
+	void getCommentReturnsV1TagsCommentIfV2TagsCommentIsEmpty() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setComment("V1 Comment");
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setComment("");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V1 Comment", wrapper.getComment());
+		assertThat(wrapper.getComment()).isEqualTo("V1 Comment");
 	}
 
 	@Test
-	public void getCommentReturnsV1TagsCommentIfV2TagsCommentDoesNotExist() {
+	void getCommentReturnsV1TagsCommentIfV2TagsCommentDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setComment("V1 Comment");
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setComment(null);
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V1 Comment", wrapper.getComment());
+		assertThat(wrapper.getComment()).isEqualTo("V1 Comment");
 	}
 
 	@Test
-	public void getCommentReturnsV1TagsCommentIfV2TagDoesNotExist() {
+	void getCommentReturnsV1TagsCommentIfV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setComment("V1 Comment");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
-		assertEquals("V1 Comment", wrapper.getComment());
+		assertThat(wrapper.getComment()).isEqualTo("V1 Comment");
 	}
 
 	@Test
-	public void getCommentReturnsNullIfBothTagsDoNotExist() {
+	void getCommentReturnsNullIfBothTagsDoNotExist() {
 		ID3Wrapper wrapper = new ID3Wrapper(null, null);
-		assertNull(wrapper.getComment());
+		assertThat(wrapper.getComment()).isNull();
 	}
 	//endregion
 
 	//region setComment
 	@Test
-	public void setsCommentOnBothV1AndV2Tags() {
+	void setsCommentOnBothV1AndV2Tags() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
 		wrapper.setComment("a comment");
-		assertEquals("a comment", id3v1Tag.getComment());
-		assertEquals("a comment", id3v2Tag.getComment());
+		assertThat(id3v1Tag.getComment()).isEqualTo("a comment");
+		assertThat(id3v2Tag.getComment()).isEqualTo("a comment");
 	}
 
 	@Test
-	public void setsCommentOnV1TagOnly() {
+	void setsCommentOnV1TagOnly() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
 		wrapper.setComment("a comment");
-		assertEquals("a comment", id3v1Tag.getComment());
+		assertThat(id3v1Tag.getComment()).isEqualTo("a comment");
 	}
 
 	@Test
-	public void setsCommentOnV2TagOnly() {
+	void setsCommentOnV2TagOnly() {
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(null, id3v2Tag);
 		wrapper.setComment("a comment");
-		assertEquals("a comment", id3v2Tag.getComment());
+		assertThat(id3v2Tag.getComment()).isEqualTo("a comment");
 	}
 
 	@Test
-	public void setCommentDoesNotThrowExceptionWhenBothTagsDoNotExist() {
+	void setCommentDoesNotThrowExceptionWhenBothTagsDoNotExist() {
 		ID3Wrapper wrapper = new ID3Wrapper(null, null);
 		wrapper.setComment("a comment");
 	}
@@ -625,34 +622,34 @@ public class ID3WrapperTest {
 
 	//region getComposer
 	@Test
-	public void getComposerReturnsV2TagsComposer() {
+	void getComposerReturnsV2TagsComposer() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setComposer("V2 Composer");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V2 Composer", wrapper.getComposer());
+		assertThat(wrapper.getComposer()).isEqualTo("V2 Composer");
 	}
 
 	@Test
-	public void getComposerReturnsNullIfV2TagDoesNotExist() {
+	void getComposerReturnsNullIfV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
-		assertNull(wrapper.getComposer());
+		assertThat(wrapper.getComposer()).isNull();
 	}
 	//endregion
 
 	//region setComposer
 	@Test
-	public void setsComposerOnV2Tag() {
+	void setsComposerOnV2Tag() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
 		wrapper.setComposer("a composer");
-		assertEquals("a composer", id3v2Tag.getComposer());
+		assertThat(id3v2Tag.getComposer()).isEqualTo("a composer");
 	}
 
 	@Test
-	public void setComposerDoesNotThrowExceptionWhenV2TagDoesNotExist() {
+	void setComposerDoesNotThrowExceptionWhenV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
 		wrapper.setComposer("a composer");
@@ -661,34 +658,34 @@ public class ID3WrapperTest {
 
 	//region getOriginalArtist
 	@Test
-	public void getOriginalArtistReturnsV2TagsOriginalArtist() {
+	void getOriginalArtistReturnsV2TagsOriginalArtist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setOriginalArtist("V2 OriginalArtist");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V2 OriginalArtist", wrapper.getOriginalArtist());
+		assertThat(wrapper.getOriginalArtist()).isEqualTo("V2 OriginalArtist");
 	}
 
 	@Test
-	public void getOriginalArtistReturnsNullIfV2TagDoesNotExist() {
+	void getOriginalArtistReturnsNullIfV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
-		assertNull(wrapper.getOriginalArtist());
+		assertThat(wrapper.getOriginalArtist()).isNull();
 	}
 	//endregion
 
 	//region setOriginalArtist
 	@Test
-	public void setsOriginalArtistOnV2Tag() {
+	void setsOriginalArtistOnV2Tag() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
 		wrapper.setOriginalArtist("an original artist");
-		assertEquals("an original artist", id3v2Tag.getOriginalArtist());
+		assertThat(id3v2Tag.getOriginalArtist()).isEqualTo("an original artist");
 	}
 
 	@Test
-	public void setOriginalArtistDoesNotThrowExceptionWhenV2TagDoesNotExist() {
+	void setOriginalArtistDoesNotThrowExceptionWhenV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
 		wrapper.setOriginalArtist("an original artist");
@@ -697,34 +694,34 @@ public class ID3WrapperTest {
 
 	//region getAlbumArtist
 	@Test
-	public void getAlbumArtistReturnsV2TagsAlbumArtist() {
+	void getAlbumArtistReturnsV2TagsAlbumArtist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setAlbumArtist("V2 AlbumArtist");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V2 AlbumArtist", wrapper.getAlbumArtist());
+		assertThat(wrapper.getAlbumArtist()).isEqualTo("V2 AlbumArtist");
 	}
 
 	@Test
-	public void getAlbumArtistReturnsNullIfV2TagDoesNotExist() {
+	void getAlbumArtistReturnsNullIfV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
-		assertNull(wrapper.getAlbumArtist());
+		assertThat(wrapper.getAlbumArtist()).isNull();
 	}
 	//endregion
 
 	//region setAlbumArtist
 	@Test
-	public void setsAlbumArtistOnV2Tag() {
+	void setsAlbumArtistOnV2Tag() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
 		wrapper.setAlbumArtist("an album artist");
-		assertEquals("an album artist", id3v2Tag.getAlbumArtist());
+		assertThat(id3v2Tag.getAlbumArtist()).isEqualTo("an album artist");
 	}
 
 	@Test
-	public void setAlbumArtistDoesNotThrowExceptionWhenV2TagDoesNotExist() {
+	void setAlbumArtistDoesNotThrowExceptionWhenV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
 		wrapper.setAlbumArtist("an album artist");
@@ -733,34 +730,34 @@ public class ID3WrapperTest {
 
 	//region getCopyright
 	@Test
-	public void getCopyrightReturnsV2TagsCopyright() {
+	void getCopyrightReturnsV2TagsCopyright() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setCopyright("V2 Copyright");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V2 Copyright", wrapper.getCopyright());
+		assertThat(wrapper.getCopyright()).isEqualTo("V2 Copyright");
 	}
 
 	@Test
-	public void getCopyrightReturnsNullIfV2TagDoesNotExist() {
+	void getCopyrightReturnsNullIfV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
-		assertNull(wrapper.getCopyright());
+		assertThat(wrapper.getCopyright()).isNull();
 	}
 	//endregion
 
 	//region setCopyright
 	@Test
-	public void setsCopyrightOnV2Tag() {
+	void setsCopyrightOnV2Tag() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
 		wrapper.setCopyright("a copyright");
-		assertEquals("a copyright", id3v2Tag.getCopyright());
+		assertThat(id3v2Tag.getCopyright()).isEqualTo("a copyright");
 	}
 
 	@Test
-	public void setCopyrightDoesNotThrowExceptionWhenV2TagDoesNotExist() {
+	void setCopyrightDoesNotThrowExceptionWhenV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
 		wrapper.setCopyright("a copyright");
@@ -769,34 +766,34 @@ public class ID3WrapperTest {
 
 	//region getUrl
 	@Test
-	public void getUrlReturnsV2TagsUrl() {
+	void getUrlReturnsV2TagsUrl() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setUrl("V2 Url");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V2 Url", wrapper.getUrl());
+		assertThat(wrapper.getUrl()).isEqualTo("V2 Url");
 	}
 
 	@Test
-	public void getUrlReturnsNullIfV2TagDoesNotExist() {
+	void getUrlReturnsNullIfV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
-		assertNull(wrapper.getUrl());
+		assertThat(wrapper.getUrl()).isNull();
 	}
 	//endregion
 
 	//region setUrl
 	@Test
-	public void setsUrlOnV2Tag() {
+	void setsUrlOnV2Tag() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
 		wrapper.setUrl("a url");
-		assertEquals("a url", id3v2Tag.getUrl());
+		assertThat(id3v2Tag.getUrl()).isEqualTo("a url");
 	}
 
 	@Test
-	public void setUrlDoesNotThrowExceptionWhenV2TagDoesNotExist() {
+	void setUrlDoesNotThrowExceptionWhenV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
 		wrapper.setUrl("a url");
@@ -805,34 +802,34 @@ public class ID3WrapperTest {
 
 	//region getEncoder
 	@Test
-	public void getEncoderReturnsV2TagsEncoder() {
+	void getEncoderReturnsV2TagsEncoder() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setEncoder("V2 Encoder");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V2 Encoder", wrapper.getEncoder());
+		assertThat(wrapper.getEncoder()).isEqualTo("V2 Encoder");
 	}
 
 	@Test
-	public void getEncoderReturnsNullIfV2TagDoesNotExist() {
+	void getEncoderReturnsNullIfV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
-		assertNull(wrapper.getEncoder());
+		assertThat(wrapper.getEncoder()).isNull();
 	}
 	//endregion
 
 	//region setEncoder
 	@Test
-	public void setsEncoderOnV2Tag() {
+	void setsEncoderOnV2Tag() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
 		wrapper.setEncoder("an encoder");
-		assertEquals("an encoder", id3v2Tag.getEncoder());
+		assertThat(id3v2Tag.getEncoder()).isEqualTo("an encoder");
 	}
 
 	@Test
-	public void setEncoderDoesNotThrowExceptionWhenV2TagDoesNotExist() {
+	void setEncoderDoesNotThrowExceptionWhenV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
 		wrapper.setEncoder("an encoder");
@@ -841,37 +838,37 @@ public class ID3WrapperTest {
 
 	//region getAlbumImage and getAlbumImageMimeType
 	@Test
-	public void getAlbumImageReturnsV2TagsAlbumImage() {
+	void getAlbumImageReturnsV2TagsAlbumImage() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setAlbumImage(new byte[]{12, 4, 7}, "mime type");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertArrayEquals(new byte[]{12, 4, 7}, wrapper.getAlbumImage());
-		assertEquals("mime type", wrapper.getAlbumImageMimeType());
+		assertThat(wrapper.getAlbumImage()).isEqualTo(new byte[]{12, 4, 7});
+		assertThat(wrapper.getAlbumImageMimeType()).isEqualTo("mime type");
 	}
 
 	@Test
-	public void getAlbumImageReturnsNullIfV2TagDoesNotExist() {
+	void getAlbumImageReturnsNullIfV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
-		assertNull(wrapper.getAlbumImage());
-		assertNull(wrapper.getAlbumImageMimeType());
+		assertThat(wrapper.getAlbumImage()).isNull();
+		assertThat(wrapper.getAlbumImageMimeType()).isNull();
 	}
 	//endregion
 
 	//region setAlbumImage
 	@Test
-	public void setsAlbumImageOnV2Tag() {
+	void setsAlbumImageOnV2Tag() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
 		wrapper.setAlbumImage(new byte[]{12, 4, 7}, "mime type");
-		assertArrayEquals(new byte[]{12, 4, 7}, id3v2Tag.getAlbumImage());
-		assertEquals("mime type", id3v2Tag.getAlbumImageMimeType());
+		assertThat(id3v2Tag.getAlbumImage()).isEqualTo(new byte[]{12, 4, 7});
+		assertThat(id3v2Tag.getAlbumImageMimeType()).isEqualTo("mime type");
 	}
 
 	@Test
-	public void setAlbumImageDoesNotThrowExceptionWhenV2TagDoesNotExist() {
+	void setAlbumImageDoesNotThrowExceptionWhenV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
 		wrapper.setAlbumImage(new byte[]{12, 4, 7}, "mime type");
@@ -880,34 +877,34 @@ public class ID3WrapperTest {
 
 	//region getLyrics
 	@Test
-	public void getLyricsReturnsV2TagsLyrics() {
+	void getLyricsReturnsV2TagsLyrics() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.setLyrics("V2 Lyrics");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
-		assertEquals("V2 Lyrics", wrapper.getLyrics());
+		assertThat(wrapper.getLyrics()).isEqualTo("V2 Lyrics");
 	}
 
 	@Test
-	public void getLyricsReturnsNullIfV2TagDoesNotExist() {
+	void getLyricsReturnsNullIfV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
-		assertNull(wrapper.getLyrics());
+		assertThat(wrapper.getLyrics()).isNull();
 	}
 	//endregion
 
 	//region setLyrics
 	@Test
-	public void setsLyricsOnV2Tag() {
+	void setsLyricsOnV2Tag() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3v2 id3v2Tag = new ID3v2TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, id3v2Tag);
 		wrapper.setLyrics("lyrics");
-		assertEquals("lyrics", id3v2Tag.getLyrics());
+		assertThat(id3v2Tag.getLyrics()).isEqualTo("lyrics");
 	}
 
 	@Test
-	public void setLyricsDoesNotThrowExceptionWhenV2TagDoesNotExist() {
+	void setLyricsDoesNotThrowExceptionWhenV2TagDoesNotExist() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
 		wrapper.setLyrics("lyrics");
@@ -916,56 +913,56 @@ public class ID3WrapperTest {
 
 	//region clearComment
 	@Test
-	public void clearsCommentOnV1Tag() {
+	void clearsCommentOnV1Tag() {
 		ID3v1 id3v1Tag = new ID3v1TagForTesting();
 		id3v1Tag.setComment("a comment");
 		ID3Wrapper wrapper = new ID3Wrapper(id3v1Tag, null);
 		wrapper.clearComment();
-		assertNull(id3v1Tag.getComment());
+		assertThat(id3v1Tag.getComment()).isNull();
 	}
 
 	@Test
-	public void clearsCommentFrameOnV2Tag() {
+	void clearsCommentFrameOnV2Tag() {
 		ID3v2TagForTesting id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.addFrameSet(AbstractID3v2Tag.ID_COMMENT, new ID3v2FrameSet(AbstractID3v2Tag.ID_COMMENT));
-		assertTrue(id3v2Tag.getFrameSets().containsKey(AbstractID3v2Tag.ID_COMMENT));
+		assertThat(id3v2Tag.getFrameSets()).doesNotContainKey(AbstractID3v2Tag.ID_COMMENT);
 		ID3Wrapper wrapper = new ID3Wrapper(null, id3v2Tag);
 		wrapper.clearComment();
-		assertFalse(id3v2Tag.getFrameSets().containsKey(AbstractID3v2Tag.ID_COMMENT));
+		assertThat(id3v2Tag.getFrameSets()).doesNotContainKey(AbstractID3v2Tag.ID_COMMENT);
 	}
 	//endregion
 
 	//region clearCopyright
 	@Test
-	public void clearsCopyrightFrameOnV2Tag() {
+	void clearsCopyrightFrameOnV2Tag() {
 		ID3v2TagForTesting id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.addFrameSet(AbstractID3v2Tag.ID_COPYRIGHT, new ID3v2FrameSet(AbstractID3v2Tag.ID_COPYRIGHT));
-		assertTrue(id3v2Tag.getFrameSets().containsKey(AbstractID3v2Tag.ID_COPYRIGHT));
+		assertThat(id3v2Tag.getFrameSets()).containsKey(AbstractID3v2Tag.ID_COPYRIGHT);
 		ID3Wrapper wrapper = new ID3Wrapper(null, id3v2Tag);
 		wrapper.clearCopyright();
-		assertFalse(id3v2Tag.getFrameSets().containsKey(AbstractID3v2Tag.ID_COPYRIGHT));
+		assertThat(id3v2Tag.getFrameSets()).doesNotContainKey(AbstractID3v2Tag.ID_COPYRIGHT);
 	}
 
 	@Test
-	public void clearCopyrightDoesNotThrowExceptionWhenV2TagDoesNotExist() {
+	void clearCopyrightDoesNotThrowExceptionWhenV2TagDoesNotExist() {
 		ID3Wrapper wrapper = new ID3Wrapper(null, null);
 		wrapper.clearCopyright();
 	}
 	//endregion
 
-	//region clearCopyright
+	//region clearCo}pyright
 	@Test
-	public void clearsEncoderFrameOnV2Tag() {
+	void clearsEncoderFrameOnV2Tag() {
 		ID3v2TagForTesting id3v2Tag = new ID3v2TagForTesting();
 		id3v2Tag.addFrameSet(AbstractID3v2Tag.ID_ENCODER, new ID3v2FrameSet(AbstractID3v2Tag.ID_ENCODER));
-		assertTrue(id3v2Tag.getFrameSets().containsKey(AbstractID3v2Tag.ID_ENCODER));
+		assertThat(id3v2Tag.getFrameSets()).containsKey(AbstractID3v2Tag.ID_ENCODER);
 		ID3Wrapper wrapper = new ID3Wrapper(null, id3v2Tag);
 		wrapper.clearEncoder();
-		assertFalse(id3v2Tag.getFrameSets().containsKey(AbstractID3v2Tag.ID_ENCODER));
+		assertThat(id3v2Tag.getFrameSets()).doesNotContainKey(AbstractID3v2Tag.ID_ENCODER);
 	}
 
 	@Test
-	public void clearEncoderDoesNotThrowExceptionWhenV2TagDoesNotExist() {
+	void clearEncoderDoesNotThrowExceptionWhenV2TagDoesNotExist() {
 		ID3Wrapper wrapper = new ID3Wrapper(null, null);
 		wrapper.clearEncoder();
 	}

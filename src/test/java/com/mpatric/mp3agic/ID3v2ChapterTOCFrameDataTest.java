@@ -1,34 +1,23 @@
 package com.mpatric.mp3agic;
 
-import static org.junit.Assert.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 
-public class ID3v2ChapterTOCFrameDataTest {
+import static org.assertj.core.api.Assertions.assertThat;
+
+class ID3v2ChapterTOCFrameDataTest {
 
 	@Test
-	public void equalsItself() throws Exception {
+	void equalsItself() {
 		ID3v2ChapterTOCFrameData frameData = new ID3v2ChapterTOCFrameData(false, true, false, "toc1", new String[]{"ch1", "ch2"});
-		assertEquals(frameData, frameData);
+		assertThat(frameData).isEqualTo(frameData);
 	}
 
 	@Test
-	public void notEqualToNull() throws Exception {
-		ID3v2ChapterTOCFrameData frameData = new ID3v2ChapterTOCFrameData(false, true, false, "toc1", new String[]{"ch1", "ch2"});
-		assertFalse(frameData.equals(null));
-	}
-
-	@Test
-	public void notEqualToDifferentClass() {
-		ID3v2ChapterTOCFrameData frameData = new ID3v2ChapterTOCFrameData(false, true, false, "toc1", new String[]{"ch1", "ch2"});
-		assertFalse(frameData.equals("8"));
-	}
-
-	@Test
-	public void shouldConsiderTwoEquivalentObjectsEqual() throws Exception {
-		String children[] = {"ch1", "ch2"};
+	void shouldConsiderTwoEquivalentObjectsEqual() {
+		String[] children = {"ch1", "ch2"};
 		ID3v2ChapterTOCFrameData frameData1 = new ID3v2ChapterTOCFrameData(false, true, false, "toc1", children);
 		ID3v2TextFrameData subFrameData1 = new ID3v2TextFrameData(false, new EncodedText("Hello there"));
 		frameData1.addSubframe("TIT2", subFrameData1);
@@ -36,97 +25,97 @@ public class ID3v2ChapterTOCFrameDataTest {
 
 		ID3v2TextFrameData subFrameData2 = new ID3v2TextFrameData(false, new EncodedText("Hello there"));
 		frameData2.addSubframe("TIT2", subFrameData2);
-		assertEquals(frameData1, frameData2);
+		assertThat(frameData2).isEqualTo(frameData1);
 	}
 
 	@Test
-	public void notEqualIfUnsynchronizationNotEqual() {
+	void notEqualIfUnsynchronizationNotEqual() {
 		ID3v2ChapterTOCFrameData frameData1 = new ID3v2ChapterTOCFrameData(false, true, false, "toc1", new String[]{"ch1", "ch2"});
 		ID3v2ChapterTOCFrameData frameData2 = new ID3v2ChapterTOCFrameData(true, true, false, "toc1", new String[]{"ch1", "ch2"});
-		assertNotEquals(frameData1, frameData2);
+		assertThat(frameData1).isNotEqualTo(frameData2);
 	}
 
 	@Test
-	public void notEqualIfIsRootNotEqual() {
+	void notEqualIfIsRootNotEqual() {
 		ID3v2ChapterTOCFrameData frameData1 = new ID3v2ChapterTOCFrameData(false, true, false, "toc1", new String[]{"ch1", "ch2"});
 		ID3v2ChapterTOCFrameData frameData2 = new ID3v2ChapterTOCFrameData(false, false, false, "toc1", new String[]{"ch1", "ch2"});
-		assertNotEquals(frameData1, frameData2);
+		assertThat(frameData1).isNotEqualTo(frameData2);
 	}
 
 	@Test
-	public void notEqualIfIsOrderedNotEqual() {
+	void notEqualIfIsOrderedNotEqual() {
 		ID3v2ChapterTOCFrameData frameData1 = new ID3v2ChapterTOCFrameData(false, true, false, "toc1", new String[]{"ch1", "ch2"});
 		ID3v2ChapterTOCFrameData frameData2 = new ID3v2ChapterTOCFrameData(false, true, true, "toc1", new String[]{"ch1", "ch2"});
-		assertNotEquals(frameData1, frameData2);
+		assertThat(frameData1).isNotEqualTo(frameData2);
 	}
 
 	@Test
-	public void notEqualIfIdNotEqual() {
+	void notEqualIfIdNotEqual() {
 		ID3v2ChapterTOCFrameData frameData1 = new ID3v2ChapterTOCFrameData(false, true, false, "toc1", new String[]{"ch1", "ch2"});
 		ID3v2ChapterTOCFrameData frameData2 = new ID3v2ChapterTOCFrameData(false, true, false, "toc2", new String[]{"ch1", "ch2"});
-		assertNotEquals(frameData1, frameData2);
+		assertThat(frameData1).isNotEqualTo(frameData2);
 	}
 
 	@Test
-	public void notEqualIfIdIsNullOnOne() {
+	void notEqualIfIdIsNullOnOne() {
 		ID3v2ChapterTOCFrameData frameData1 = new ID3v2ChapterTOCFrameData(false, true, false, null, new String[]{"ch1", "ch2"});
 		ID3v2ChapterTOCFrameData frameData2 = new ID3v2ChapterTOCFrameData(false, true, false, "toc1", new String[]{"ch1", "ch2"});
-		assertNotEquals(frameData1, frameData2);
+		assertThat(frameData1).isNotEqualTo(frameData2);
 	}
 
 	@Test
-	public void equalIfIdIsNullOnBoth() {
+	void equalIfIdIsNullOnBoth() {
 		ID3v2ChapterTOCFrameData frameData1 = new ID3v2ChapterTOCFrameData(false, true, false, null, new String[]{"ch1", "ch2"});
 		ID3v2ChapterTOCFrameData frameData2 = new ID3v2ChapterTOCFrameData(false, true, false, null, new String[]{"ch1", "ch2"});
-		assertEquals(frameData1, frameData2);
+		assertThat(frameData2).isEqualTo(frameData1);
 	}
 
 	@Test
-	public void notEqualIfChildrenNotEqual() {
+	void notEqualIfChildrenNotEqual() {
 		ID3v2ChapterTOCFrameData frameData1 = new ID3v2ChapterTOCFrameData(false, true, false, "toc1", new String[]{"ch1", "ch2"});
 		ID3v2ChapterTOCFrameData frameData2 = new ID3v2ChapterTOCFrameData(false, true, false, "toc`", new String[]{"ch3", "ch2"});
-		assertNotEquals(frameData1, frameData2);
+		assertThat(frameData1).isNotEqualTo(frameData2);
 	}
 
 	@Test
-	public void notEqualIfOneDoeNotHaveChildren() {
+	void notEqualIfOneDoeNotHaveChildren() {
 		ID3v2ChapterTOCFrameData frameData1 = new ID3v2ChapterTOCFrameData(false, true, false, "toc1", new String[]{"ch1", "ch2"});
 		ID3v2ChapterTOCFrameData frameData2 = new ID3v2ChapterTOCFrameData(false, true, false, "toc`", new String[]{});
-		assertNotEquals(frameData1, frameData2);
+		assertThat(frameData1).isNotEqualTo(frameData2);
 	}
 
 	@Test
-	public void notEqualIfChildrenNullOnOne() {
+	void notEqualIfChildrenNullOnOne() {
 		ID3v2ChapterTOCFrameData frameData1 = new ID3v2ChapterTOCFrameData(false, true, false, "toc1", null);
 		ID3v2ChapterTOCFrameData frameData2 = new ID3v2ChapterTOCFrameData(false, true, false, "toc`", new String[]{"ch3", "ch2"});
-		assertNotEquals(frameData1, frameData2);
+		assertThat(frameData1).isNotEqualTo(frameData2);
 	}
 
 	@Test
-	public void notEqualIfOneHasSubframes() throws Exception {
+	void notEqualIfOneHasSubframes() {
 		ID3v2ChapterTOCFrameData frameData1 = new ID3v2ChapterTOCFrameData(false, true, false, "toc1", new String[]{"ch1", "ch2"});
 		ID3v2ChapterTOCFrameData frameData2 = new ID3v2ChapterTOCFrameData(false, true, false, "toc1", new String[]{"ch1", "ch2"});
 		ID3v2TextFrameData subFrameData2 = new ID3v2TextFrameData(false, new EncodedText("Hello there"));
 		frameData2.addSubframe("TIT2", subFrameData2);
-		assertNotEquals(frameData1, frameData2);
+		assertThat(frameData1).isNotEqualTo(frameData2);
 	}
 
 	@Test
-	public void hashCodeIsConsistent() {
+	void hashCodeIsConsistent() {
 		ID3v2ChapterTOCFrameData frameData = new ID3v2ChapterTOCFrameData(false, true, false, "toc1", new String[]{"ch1", "ch2"});
-		assertEquals(frameData.hashCode(), frameData.hashCode());
+		assertThat(frameData.hashCode()).isEqualTo(frameData.hashCode());
 	}
 
 	@Test
-	public void equalObjectsHaveSameHashCode() {
+	void equalObjectsHaveSameHashCode() {
 		ID3v2ChapterTOCFrameData frameData = new ID3v2ChapterTOCFrameData(false, true, false, "toc1", new String[]{"ch1", "ch2"});
 		ID3v2ChapterTOCFrameData frameDataAgain = new ID3v2ChapterTOCFrameData(false, true, false, "toc1", new String[]{"ch1", "ch2"});
-		assertEquals(frameData.hashCode(), frameDataAgain.hashCode());
+		assertThat(frameDataAgain.hashCode()).isEqualTo(frameData.hashCode());
 	}
 
 	@Test
-	public void shouldConvertFrameDataToBytesAndBackToEquivalentObject() throws Exception {
-		String children[] = {"ch1", "ch2"};
+	void shouldConvertFrameDataToBytesAndBackToEquivalentObject() throws Exception {
+		String[] children = {"ch1", "ch2"};
 		ID3v2ChapterTOCFrameData frameData = new ID3v2ChapterTOCFrameData(false, true, true, "toc1", children);
 		ID3v2TextFrameData subFrameData = new ID3v2TextFrameData(false, new EncodedText("Hello there"));
 		frameData.addSubframe("TIT2", subFrameData);
@@ -142,62 +131,60 @@ public class ID3v2ChapterTOCFrameDataTest {
 				0,
 				'H', 'e', 'l', 'l', 'o', ' ', 't', 'h', 'e', 'r', 'e'
 		};
-		assertArrayEquals(expectedBytes, bytes);
+		assertThat(bytes).isEqualTo(expectedBytes);
 		ID3v2ChapterTOCFrameData frameDataCopy = new ID3v2ChapterTOCFrameData(false, bytes);
-		assertEquals(frameData, frameDataCopy);
+		assertThat(frameDataCopy).isEqualTo(frameData);
 	}
 
 	@Test
-	public void toStringOnMostlyEmptyFrameData() {
+	void toStringOnMostlyEmptyFrameData() {
 		ID3v2ChapterTOCFrameData frameData = new ID3v2ChapterTOCFrameData(false);
-		assertEquals(
-				"ID3v2ChapterTOCFrameData [isRoot=false, isOrdered=false, id=null, children=null, subframes=[]]",
-				frameData.toString());
+		assertThat(frameData.toString()).isEqualTo(
+				"ID3v2ChapterTOCFrameData [isRoot=false, isOrdered=false, id=null, children=null, subframes=[]]");
 	}
 
 	@Test
-	public void toStringOnFullFrameData() {
+	void toStringOnFullFrameData() {
 		ID3v2ChapterTOCFrameData frameData = new ID3v2ChapterTOCFrameData(false, true, true, "toc1", new String[]{"ch1", "ch2"});
-		assertEquals(
-				"ID3v2ChapterTOCFrameData [isRoot=true, isOrdered=true, id=toc1, children=[ch1, ch2], subframes=[]]",
-				frameData.toString());
+		assertThat(frameData.toString()).isEqualTo(
+				"ID3v2ChapterTOCFrameData [isRoot=true, isOrdered=true, id=toc1, children=[ch1, ch2], subframes=[]]");
 	}
 
 	@Test
-	public void getsAndSetsIsRoot() {
+	void getsAndSetsIsRoot() {
 		ID3v2ChapterTOCFrameData frameData = new ID3v2ChapterTOCFrameData(false);
 		frameData.setRoot(true);
-		assertTrue(frameData.isRoot());
+		assertThat(frameData.isRoot()).isTrue();
 	}
 
 	@Test
-	public void getsAndSetsIsOrdered() {
+	void getsAndSetsIsOrdered() {
 		ID3v2ChapterTOCFrameData frameData = new ID3v2ChapterTOCFrameData(false);
 		frameData.setOrdered(true);
-		assertTrue(frameData.isOrdered());
+		assertThat(frameData.isOrdered()).isTrue();
 	}
 
 	@Test
-	public void getsAndSetsId() {
+	void getsAndSetsId() {
 		ID3v2ChapterTOCFrameData frameData = new ID3v2ChapterTOCFrameData(false);
 		frameData.setId("My ID");
-		assertEquals("My ID", frameData.getId());
+		assertThat(frameData.getId()).isEqualTo("My ID");
 	}
 
 	@Test
-	public void getsAndSetsChildren() {
+	void getsAndSetsChildren() {
 		ID3v2ChapterTOCFrameData frameData = new ID3v2ChapterTOCFrameData(false);
 		frameData.setChildren(new String[]{"ch1", "ch2"});
-		assertArrayEquals(new String[]{"ch1", "ch2"}, frameData.getChildren());
+		assertThat(frameData.getChildren()).isEqualTo(new String[]{"ch1", "ch2"});
 	}
 
 	@Test
-	public void getsAndSetsSubframes() {
+	void getsAndSetsSubframes() {
 		ID3v2ChapterTOCFrameData frameData = new ID3v2ChapterTOCFrameData(false);
 		ArrayList<ID3v2Frame> subframes = new ArrayList<>(2);
 		subframes.add(new ID3v2Frame("", new byte[]{'c', 'h', '1', 0}));
 		subframes.add(new ID3v2Frame("", new byte[]{1, 0, 1, 0}));
 		frameData.setSubframes(subframes);
-		assertEquals(subframes, frameData.getSubframes());
+		assertThat(frameData.getSubframes()).isEqualTo(subframes);
 	}
 }

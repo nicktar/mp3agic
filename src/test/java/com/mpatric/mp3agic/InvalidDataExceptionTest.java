@@ -1,30 +1,29 @@
 package com.mpatric.mp3agic;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class InvalidDataExceptionTest {
+class InvalidDataExceptionTest {
 	@Test
-	public void defaultConstructor() {
+	void defaultConstructor() {
 		InvalidDataException exception = new InvalidDataException();
-		assertNull(exception.getMessage());
-		assertNull(exception.getCause());
+		assertThat(exception.getMessage()).isNull();
+		assertThat(exception.getCause()).isNull();
 	}
 
 	@Test
-	public void constructorWithMessage() {
+	void constructorWithMessage() {
 		InvalidDataException exception = new InvalidDataException("A message");
-		assertEquals("A message", exception.getMessage());
-		assertNull(exception.getCause());
+		assertThat(exception.getMessage()).isEqualTo("A message");
+		assertThat(exception.getCause()).isNull();
 	}
 
 	@Test
-	public void constructorWithMessageAndCause() {
+	void constructorWithMessageAndCause() {
 		Throwable exceptionCause = new IllegalArgumentException("Bad argument");
 		InvalidDataException exception = new InvalidDataException("A message", exceptionCause);
-		assertEquals("A message", exception.getMessage());
-		assertEquals(exceptionCause, exception.getCause());
+		assertThat(exception.getMessage()).isEqualTo("A message");
+		assertThat(exception.getCause()).isEqualTo(exceptionCause);
 	}
 }

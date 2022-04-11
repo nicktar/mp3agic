@@ -1,31 +1,31 @@
 package com.mpatric.mp3agic;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNull;
 
-public class UnsupportedTagExceptionTest {
+class UnsupportedTagExceptionTest {
 
 	@Test
-	public void defaultConstructor() {
+	void defaultConstructor() {
 		UnsupportedTagException exception = new UnsupportedTagException();
 		assertNull(exception.getMessage());
 		assertNull(exception.getCause());
 	}
 
 	@Test
-	public void constructorWithMessage() {
+	void constructorWithMessage() {
 		UnsupportedTagException exception = new UnsupportedTagException("A message");
-		assertEquals("A message", exception.getMessage());
+		assertThat(exception.getMessage()).isEqualTo("A message");
 		assertNull(exception.getCause());
 	}
 
 	@Test
-	public void constructorWithMessageAndCause() {
+	void constructorWithMessageAndCause() {
 		Throwable exceptionCause = new IllegalArgumentException("Bad argument");
 		UnsupportedTagException exception = new UnsupportedTagException("A message", exceptionCause);
-		assertEquals("A message", exception.getMessage());
-		assertEquals(exceptionCause, exception.getCause());
+		assertThat(exception.getMessage()).isEqualTo("A message");
+		assertThat(exception.getCause()).isEqualTo(exceptionCause);
 	}
 }

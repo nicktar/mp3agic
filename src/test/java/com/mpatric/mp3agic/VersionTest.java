@@ -1,22 +1,22 @@
 package com.mpatric.mp3agic;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class VersionTest {
+class VersionTest {
 	@Test
-	public void returnsVersion() {
-		assertEquals("UNKNOWN-SNAPSHOT", Version.getVersion());
+	void returnsVersion() {
+		assertThat(Version.getVersion()).isEqualTo("UNKNOWN-SNAPSHOT");
 	}
 
 	@Test
-	public void returnsUrl() {
-		assertEquals("http://github.com/mpatric/mp3agic", Version.getUrl());
+	void returnsUrl() {
+		assertThat(Version.getUrl()).isEqualTo("http://github.com/mpatric/mp3agic");
 	}
 
 	@Test
-	public void returnsVersionAndUrlAsString() {
-		assertEquals("UNKNOWN-SNAPSHOT - http://github.com/mpatric/mp3agic", Version.asString());
+	void returnsVersionAndUrlAsString() {
+		assertThat(Version.asString()).isEqualTo("UNKNOWN-SNAPSHOT - http://github.com/mpatric/mp3agic");
 	}
 }
