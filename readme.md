@@ -1,5 +1,5 @@
 # mp3agic
-[![Build Status](https://travis-ci.org/nicktar/mp3agic.png?branch=master)](https://travis-ci.org/nicktar/mp3agic)
+[![Build Status](https://app.travis-ci.com/nicktar/mp3agic.svg?branch=main)](https://travis-ci.org/nicktar/mp3agic)
 [![Coverage Status](https://coveralls.io/repos/mpatric/mp3agic/badge.svg?branch=master)](https://coveralls.io/r/mpatric/mp3agic?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.mpatric/mp3agic/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.mpatric/mp3agic)
 [![Build status](https://ci.appveyor.com/api/projects/status/c7k4fnxnjlmr7y7p?svg=true)](https://ci.appveyor.com/project/mpatric/mp3agic)
